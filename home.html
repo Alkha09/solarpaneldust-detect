@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SolarScan AI | Solar Panel Dust Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0f1a; color: #f3f4f6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; text-align: center; }
+        h1 { color: #10b981; margin: 50px 0 20px; }
+        .upload-btn { background: #10b981; color: white; padding: 15px 30px; border: none; border-radius: 30px; cursor: pointer; font-size: 1rem; margin: 20px 0; }
+        .result { margin-top: 30px; padding: 20px; background: #1f2937; border-radius: 10px; display: none; }
+        .loader { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.8s linear infinite; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌞 SolarScan AI</h1>
+        <p>AI-Powered Solar Panel Dust Detection</p>
+        
+        <input type="file" id="videoInput" accept="video/*" style="display: none;">
+        <button class="upload-btn" id="uploadBtn">📤 Upload Video for Analysis</button>
+        
+        <div id="result" class="result">
+            <h2>Analysis Result</h2>
+            <p id="prediction"></p>
+            <p id="details"></p>
+        </div>
+    </div>
+
+    <script>
+        const videoInput = document.getElementById('videoInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const resultDiv = document.getElementById('result');
+        const predictionSpan = document.getElementById('prediction');
+        const detailsSpan = document.getElementById('details');
+
+        uploadBtn.addEventListener('click', () => videoInput.click());
+
+        videoInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            uploadBtn.innerHTML = '<div class="loader"></div> Analyzing...';
+            uploadBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/predict/video', { method: 'POST', body: formData });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.style.display = 'block';
+                    predictionSpan.innerHTML = `<strong>Prediction:</strong> ${data.label}`;
+                    detailsSpan.innerHTML = `
+                        <strong>Dust Ratio:</strong> ${data.summary?.dust_ratio || 0}%<br>
+                        <strong>Confidence:</strong> ${data.summary?.avg_confidence || 0}%<br>
+                        <strong>Frames Analyzed:</strong> ${data.summary?.frames_analyzed || 0}
+                    `;
+                } else {
+                    alert('Error: ' + (data.error || 'Analysis failed'));
+                }
+            } catch (err) {
+                alert('Connection failed. Make sure server is running: python app.py');
+            } finally {
+                uploadBtn.innerHTML = '📤 Upload Video for Analysis';
+                uploadBtn.disabled = false;
+                videoInput.value = '';
+            }
+        });
+    </script>
+</body>
+</html>

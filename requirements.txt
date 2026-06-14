@@ -1,0 +1,10 @@
+flask
+torch
+torchvision
+opencv-python
+numpy
+matplotlib
+scikit-learn
+pillow
+seaborn
+filelock>=3.12
