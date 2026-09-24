@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SolarScan AI — Register</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #06152f;
+        --card: rgba(10, 29, 62, 0.78);
+        --border: rgba(132, 166, 255, 0.35);
+        --text: #f6f8ff;
+        --muted: #9eafd0;
+        --blue: #4b9cff;
+        --purple: #9b62ff;
+        --cyan: #49d8ff;
+        --green: #46e0a5;
+        --error: #f8b4b4;
+        --error-bg: rgba(127, 29, 29, 0.45);
+      }
+
+      body {
+        min-height: 100vh;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        overflow-x: hidden;
+        background:
+          radial-gradient(circle at 72% 50%, rgba(82, 117, 255, 0.35), transparent 30%),
+          radial-gradient(circle at 35% 25%, rgba(155, 98, 255, 0.18), transparent 30%),
+          linear-gradient(135deg, #020b1c 0%, #071b3c 45%, #0b2450 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: rgba(92, 101, 255, 0.12);
+        filter: blur(100px);
+        top: -180px;
+        right: -120px;
+        pointer-events: none;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: rgba(58, 205, 255, 0.08);
+        filter: blur(100px);
+        bottom: -150px;
+        left: -100px;
+        pointer-events: none;
+      }
+
+      .solar-background {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        overflow: hidden;
+        opacity: 0.38;
+      }
+
+      .solar-background::before {
+        content: "";
+        position: absolute;
+        width: 75%;
+        height: 55%;
+        right: -8%;
+        bottom: -5%;
+        transform: perspective(700px) rotateX(55deg) rotateZ(-12deg);
+        background:
+          repeating-linear-gradient(90deg, rgba(80, 153, 255, 0.32) 0 2px, transparent 2px 90px),
+          repeating-linear-gradient(0deg, rgba(80, 153, 255, 0.25) 0 2px, transparent 2px 55px),
+          linear-gradient(135deg, #071d42, #122f63);
+        box-shadow: 0 0 80px rgba(64, 135, 255, 0.18);
+      }
+
+      .solar-background::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, rgba(4, 16, 37, 0.95) 0%, rgba(4, 16, 37, 0.72) 35%, rgba(4, 16, 37, 0.35) 70%, rgba(4, 16, 37, 0.7) 100%);
+      }
+
+      .page {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 28px 20px;
+      }
+
+      .auth-shell {
+        width: min(100%, 520px);
+        position: relative;
+        z-index: 1;
+      }
+
+      .brand {
+        text-align: center;
+        margin-bottom: 26px;
+      }
+
+      .brand-mark {
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 14px;
+        border-radius: 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(255, 185, 78, 0.25), rgba(74, 146, 255, 0.25));
+        border: 1px solid rgba(133, 176, 255, 0.35);
+        font-size: 28px;
+        box-shadow: 0 0 25px rgba(74, 155, 255, 0.15);
+      }
+
+      .brand h1 {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+
+      .brand h1 span {
+        background: linear-gradient(90deg, #9d6cff, #6ca9ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .brand p {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .auth-card {
+        padding: 40px 34px;
+        border-radius: 26px;
+        background: linear-gradient(145deg, rgba(19, 42, 84, 0.86), rgba(5, 20, 48, 0.82));
+        border: 1px solid var(--border);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        box-shadow: 0 35px 90px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+
+      .auth-card h2 {
+        margin-bottom: 8px;
+        font-size: 34px;
+        letter-spacing: -0.03em;
+      }
+
+      .intro {
+        margin-bottom: 28px;
+        color: #9eb1d3;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .field {
+        margin-bottom: 18px;
+      }
+
+      .input-container {
+        position: relative;
+      }
+
+      .input-icon {
+        position: absolute;
+        left: 17px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+        color: #9bb7eb;
+        pointer-events: none;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #b7c7e4;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      input {
+        width: 100%;
+        height: 72px;
+        border-radius: 15px;
+        border: 1px solid rgba(100, 143, 221, 0.42);
+        background: rgba(7, 24, 55, 0.72);
+        color: white;
+        padding: 25px 16px 8px 58px;
+        outline: none;
+        font-size: 15px;
+        transition: 0.25s;
+      }
+
+      input:focus {
+        border-color: #7b86ff;
+        box-shadow: 0 0 0 3px rgba(117, 91, 255, 0.13), 0 0 25px rgba(88, 105, 255, 0.08);
+      }
+
+      input::placeholder {
+        color: #657da7;
+      }
+
+      .login-button {
+        width: 100%;
+        height: 58px;
+        border: none;
+        border-radius: 14px;
+        background: linear-gradient(100deg, #a35fff, #716cff, #409bff);
+        color: white;
+        font-size: 16px;
+        font-weight: 650;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 12px 30px rgba(104, 89, 255, 0.28);
+      }
+
+      .login-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 17px 38px rgba(104, 89, 255, 0.40);
+      }
+
+      .login-button:active {
+        transform: translateY(0);
+      }
+
+      .error {
+        margin-top: 16px;
+        padding: 12px 14px;
+        border: 1px solid rgba(248, 180, 180, 0.5);
+        border-radius: 10px;
+        background: var(--error-bg);
+        color: var(--error);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .auth-link {
+        margin-top: 24px;
+        text-align: center;
+        color: #879abd;
+        font-size: 13px;
+      }
+
+      .auth-link a {
+        color: #ae7cff;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .auth-link a:hover {
+        color: #c8a8ff;
+      }
+
+      button:focus-visible,
+      a:focus-visible,
+      input:focus-visible {
+        outline: 3px solid rgba(245, 184, 46, 0.45);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 480px) {
+        .auth-card {
+          padding: 30px 22px;
+          border-radius: 20px;
+        }
+
+        .auth-card h2 {
+          font-size: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="solar-background"></div>
+
+    <main class="page">
+      <div class="auth-shell">
+        <header class="brand">
+          <div class="brand-mark" aria-hidden="true">☀️</div>
+          <h1>SolarScan <span>AI</span></h1>
+          <p>Clean Energy. Smarter Monitoring.</p>
+        </header>
+
+        <section class="auth-card" aria-labelledby="register-title">
+          <h2 id="register-title">Create account</h2>
+          <p class="intro">Keep your solar panel inspections and maintenance insights in one secure workspace.</p>
+
+          <form method="post" action="/register">
+            <div class="field">
+              <label for="username">Username</label>
+              <div class="input-container">
+                <span class="input-icon">👤</span>
+                <input id="username" type="text" name="username" placeholder="Enter your username" minlength="3" autocomplete="username" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="password">Password</label>
+              <div class="input-container">
+                <span class="input-icon">🔒</span>
+                <input id="password" type="password" name="password" placeholder="Create a password" minlength="8" autocomplete="new-password" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="confirm_password">Confirm password</label>
+              <div class="input-container">
+                <span class="input-icon">🔐</span>
+                <input id="confirm_password" type="password" name="confirm_password" placeholder="Repeat your password" minlength="8" autocomplete="new-password" required />
+              </div>
+            </div>
+
+            <button type="submit" class="login-button">Create account</button>
+          </form>
+
+          {% if error %}
+            <div class="error" role="alert">{{ error }}</div>
+          {% endif %}
+
+          <p class="auth-link">Already have an account? <a href="/login">Sign in</a></p>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+﻿__pycache__/
+.pytest_cache/
+*.pyc
+.venv/
+venv/
+.env
+
+users.json
+login_history.json
+history.json
+
+dataset/
+
+static/results/
+
+static/uploads/

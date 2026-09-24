@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SolarSense Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}" />
+    <style>
+      :root {
+        --bg: #06152f;
+        --bg-2: #0b2147;
+        --panel: rgba(11, 31, 62, 0.76);
+        --panel-2: rgba(17, 39, 74, 0.78);
+        --primary: #4b9cff;
+        --primary-strong: #6d74ff;
+        --accent: #f5b942;
+        --good: #46e0a5;
+        --warn: #fbbf24;
+        --bad: #f87171;
+        --text: #f6f8ff;
+        --muted: #9db3d6;
+        --line: rgba(140, 170, 230, 0.22);
+        --navy: #0d2035;
+        --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: Inter, "Segoe UI", Tahoma, sans-serif;
+        background:
+          radial-gradient(circle at 72% 50%, rgba(82, 117, 255, 0.25), transparent 30%),
+          radial-gradient(circle at 35% 25%, rgba(155, 98, 255, 0.12), transparent 30%),
+          linear-gradient(135deg, #020b1c 0%, #071b3c 45%, #0b2450 100%);
+        color: var(--text);
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(120deg, rgba(4, 16, 37, 0.85), rgba(4, 16, 37, 0.38));
+        pointer-events: none;
+      }
+      a { text-decoration: none; }
+      .container {
+        position: relative;
+        z-index: 1;
+        max-width: 1450px;
+        margin: 0 auto;
+        padding: 32px 34px 64px;
+        margin-left: 260px;
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        padding: 6px 0 26px;
+        margin-bottom: 26px;
+        border-bottom: 1px solid var(--line);
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(1.7rem, 2vw, 2.2rem);
+        color: var(--text);
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+      }
+      h2 { margin: 0 0 18px; font-size: 1.2rem; color: var(--text); }
+      .header-actions { display: flex; align-items: center; gap: 12px; }
+      .page-subtitle, .section-heading p { margin: 8px 0 0; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+      .sidebar {
+        position: fixed; z-index: 5; inset: 0 auto 0 0; width: 256px; padding: 28px 18px 20px; background: linear-gradient(180deg, rgba(10, 25, 48, 0.96), rgba(8, 21, 42, 0.9)); color: #ffffff; border-right: 1px solid rgba(255,255,255,0.06); box-shadow: 12px 0 24px rgba(5, 18, 31, 0.18);
+        backdrop-filter: blur(14px);
+      }
+      .sidebar-brand { display: flex; align-items: center; gap: 12px; margin: 0 10px 34px; }
+      .sidebar-brand strong { display: block; font-size: 1.08rem; letter-spacing: -0.02em; }
+      .sidebar-brand small { display: block; margin-top: 3px; color: #9db4c9; font-size: 0.68rem; }
+      .brand-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: linear-gradient(135deg, rgba(255, 185, 78, 0.26), rgba(74, 146, 255, 0.32)); color: #fef3c7; font-size: 1.3rem; box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); }
+      .sidebar nav { display: grid; gap: 8px; }
+      .sidebar-link {
+        padding: 12px 14px; border-radius: 11px; color: #c3d2e0; text-decoration: none; font-size: 0.88rem; font-weight: 600; transition: all 0.2s ease;
+      }
+      .sidebar-link:hover, .sidebar-link.active {
+        background: rgba(255,255,255,0.08);
+        color: #ffffff;
+        transform: translateX(2px);
+      }
+      .sidebar-note {
+        position: absolute; left: 20px; right: 20px; bottom: 25px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.1); color: #9cb3c9; font-size: 0.75rem; line-height: 1.6;
+      }
+      .hero {
+        min-height: 228px; margin-bottom: 28px; border-radius: 20px; overflow: hidden; background: linear-gradient(120deg, rgba(8, 22, 43, 0.95), rgba(15, 80, 148, 0.74), rgba(12, 31, 52, 0.5)); box-shadow: var(--shadow); border: 1px solid rgba(152, 180, 255, 0.22);
+        position: relative;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(90deg, rgba(80, 153, 255, 0.12) 0 2px, transparent 2px 90px), repeating-linear-gradient(0deg, rgba(80, 153, 255, 0.08) 0 2px, transparent 2px 55px);
+        opacity: 0.6;
+      }
+      .hero-content { position: relative; z-index: 1; max-width: 700px; padding: 38px 38px 34px; color: #ffffff; }
+      .hero-tag {
+        display: inline-block; margin-bottom: 14px; padding: 7px 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; background: rgba(255,255,255,0.08); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: #ebf6ff;
+      }
+      .hero h2 { margin: 0 0 12px; color: #ffffff; font-size: clamp(1.9rem, 2.3vw, 2.7rem); line-height: 1.1; letter-spacing: -0.04em; }
+      .hero p { margin: 0; color: #e4edf7; font-size: 0.98rem; line-height: 1.7; max-width: 620px; }
+      .section-heading { margin: 0 0 14px; }
+      .section-heading h2 { margin: 0; font-size: 1.15rem; }
+      .status-badge {
+        background: rgba(70, 224, 165, 0.1);
+        border: 1px solid rgba(70, 224, 165, 0.22);
+        color: var(--good);
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .logout-link { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
+      .logout-link:hover, .logout-link:focus-visible { color: var(--text); text-decoration: underline; }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 14px;
+        margin-bottom: 28px;
+      }
+      .card {
+        background: linear-gradient(145deg, rgba(19, 42, 84, 0.76), rgba(7, 24, 55, 0.8));
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(22px);
+      }
+      .kpi { display: flex; flex-direction: column; gap: 8px; min-height: 118px; }
+      .label { color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+      .value { font-size: clamp(1.4rem, 2vw, 1.9rem); font-weight: 800; letter-spacing: -0.04em; overflow-wrap: anywhere; }
+      .panel {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+      .dropzone {
+        border: 1.5px dashed #bfd0e2;
+        background: linear-gradient(180deg, #fbfdff 0%, #f4f8fc 100%);
+      }
+      .dropzone input[type="file"] { width: 100%; margin-top: 8px; }
+      .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+      .tab-btn {
+        background: #edf3f8;
+        border: 0;
+        color: var(--muted);
+        border-radius: 10px;
+        padding: 10px 16px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .tab-btn.active {
+        background: linear-gradient(135deg, #eaf5ff, #ffffff);
+        color: var(--primary-strong);
+        box-shadow: 0 8px 18px rgba(11, 124, 227, 0.12);
+      }
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+      button {
+        background: linear-gradient(100deg, #a35fff, #716cff, #409bff);
+        border: none;
+        border-radius: 10px;
+        padding: 11px 17px;
+        color: #ffffff;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 12px 24px rgba(104, 89, 255, 0.25);
+      }
+      button.secondary {
+        background: rgba(7, 24, 54, 0.65);
+        color: var(--text);
+        border: 1px solid var(--line);
+        box-shadow: none;
+      }
+      button:focus-visible, input:focus-visible, .tab-btn:focus-visible {
+        outline: 3px solid rgba(251, 191, 36, 0.8);
+        outline-offset: 2px;
+      }
+      .preview {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 270px;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #f4f8fb 0%, #eef5fa 100%);
+        border: 1px solid var(--line);
+        overflow: hidden;
+      }
+      .preview img { max-width: 100%; height: auto; display: block; }
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .mini-metric {
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 12px 14px;
+      }
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .result-image {
+        width: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        background: rgba(0,0,0,0.2);
+      }
+      .result-image img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      ul { margin: 0; padding-left: 18px; color: var(--muted); }
+      li + li { margin-top: 8px; }
+      @media (max-width: 860px) {
+        .sidebar { display: none; }
+        .container { margin-left: 0; }
+        .grid, .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .panel { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 560px) {
+        .container { padding: 22px 14px 44px; }
+        .header { align-items: flex-start; flex-direction: column; }
+        .header-actions { width: 100%; justify-content: space-between; }
+        .grid, .metrics-grid, .results-grid { grid-template-columns: 1fr; }
+        .card { padding: 18px; }
+      }
+    </style>
+  </head>
+  <body>
+    <button class="mobile-nav-toggle" id="mobileNavToggle" type="button" aria-label="Open navigation" aria-controls="primaryNavigation" aria-expanded="false">&#9776;</button>
+    <aside class="sidebar" id="primaryNavigation" aria-label="Primary navigation">
+      <div class="sidebar-brand"><span class="brand-icon">&#9728;</span><span><strong>SolarSense AI</strong><small>Solar Panel Intelligence</small></span></div>
+      <nav>
+        <a href="#top" class="sidebar-link active">Overview</a>
+        <a href="#detection" class="sidebar-link">Detection</a>
+        <a href="#maintenance" class="sidebar-link">Maintenance</a>
+        <a href="#history" class="sidebar-link">History</a>
+      </nav>
+      <div class="sidebar-note"><strong>AI Solar Inspection</strong><br />AI-powered analysis for images and videos to detect dust, assess panel condition, and support maintenance decisions.</div>
+    </aside>
+    <div class="container" id="top">
+      <div class="header">
+        <div><h1>SolarSense AI Dashboard</h1><p class="page-subtitle">AI-powered solar panel inspection and maintenance platform</p></div>
+        <div class="header-actions">
+          <div class="status-badge" id="systemStatus">System ready</div>
+          <a class="logout-link" href="/logout">Log out</a>
+        </div>
+      </div>
+
+      <section class="hero">
+        <div class="hero-content">
+          <span class="hero-tag">AI-powered inspection</span>
+          <h2>Solar panel condition analysis for dust, degradation, and maintenance planning</h2>
+          <p>SolarSense AI analyzes both images and videos to detect dust accumulation, evaluate panel condition, and provide actionable maintenance insights for cleaner, more efficient solar operations.</p>
+        </div>
+      </section>
+
+      <div class="grid">
+        <div class="card kpi">
+          <div class="label">Confidence</div>
+          <div class="value" id="confidenceValue">--</div>
+        </div>
+        <div class="card kpi">
+          <div class="label">Dust Coverage</div>
+          <div class="value" id="coverageValue">--</div>
+        </div>
+        <div class="card kpi">
+          <div class="label">Next Cleaning</div>
+          <div class="value" id="nextCleaningValue">--</div>
+        </div>
+      </div>
+
+      <section id="detection">
+      <div class="section-heading"><h2>Panel Detection</h2><p>Upload an image or video for AI-based inspection.</p></div>
+      <div class="tabs">
+        <button class="tab-btn active" data-target="image-panel">Image</button>
+        <button class="tab-btn" data-target="video-panel">Video</button>
+      </div>
+
+      <div class="panel" id="image-panel">
+        <div class="card dropzone">
+          <h2>Analyze panel image</h2>
+          <input id="imageInput" type="file" accept="image/*" />
+          <div class="button-row">
+            <button id="analyzeBtn">Analyze Image</button>
+          </div>
+        </div>
+        <div class="card preview">
+          <img id="previewImage" alt="Panel preview" src="" />
+        </div>
+      </div>
+
+      <div class="panel" id="video-panel" style="display:none;">
+        <div class="card dropzone">
+          <h2>Analyze panel video</h2>
+          <input id="videoInput" type="file" accept="video/*" />
+          <div class="button-row">
+            <button id="videoBtn">Upload Video</button>
+          </div>
+          <div id="videoStatus" style="margin-top: 12px; color: var(--muted);"></div>
+        </div>
+        <div class="card preview">
+          <video id="videoPreview" controls style="width:100%; max-height: 360px; display:none;"></video>
+        </div>
+      </div>
+      </section>
+
+      <div class="card" id="maintenance" style="margin-bottom: 24px;">
+        <h2>Dust map & maintenance</h2>
+        <div class="results-grid">
+          <div class="result-image"><img id="overlayImage" alt="Overlay heatmap" src="" /></div>
+          <div class="result-image"><img id="heatmapImage" alt="Dust heatmap" src="" /></div>
+        </div>
+        <div style="margin-top:16px; display:grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
+          <div class="mini-metric"><div class="label">Dust level</div><div class="value" id="dustLevelValue">--</div></div>
+          <div class="mini-metric"><div class="label">Measured efficiency loss</div><div class="value" id="efficiencyValue">Not measured</div></div>
+          <div class="mini-metric"><div class="label">Action</div><div class="value" id="actionValue">--</div></div>
+          <div class="mini-metric"><div class="label">Coverage method</div><div class="value" id="coverageSourceValue">--</div></div>
+        </div>
+        <div style="margin-top:16px;">
+          <ul id="recommendationsList"></ul>
+        </div>
+      </div>
+
+      <div class="card" id="history" style="margin-bottom: 24px;">
+        <div class="section-heading history-heading"><h2>Inspection history</h2><p id="historySummary">Loading inspection history...</p></div>
+        <div class="history-visuals">
+          <div>
+            <h3 class="chart-title">Dust and confidence trend</h3>
+            <canvas id="historyChart" width="900" height="260" aria-label="Dust coverage and model confidence by inspection date" role="img"></canvas>
+          </div>
+          <div class="condition-chart-panel">
+            <h3 class="chart-title">Condition distribution</h3>
+            <canvas id="conditionChart" width="240" height="240" aria-label="Percentage of clean and dusty inspections" role="img"></canvas>
+            <div class="condition-summary" id="conditionSummary">Loading...</div>
+          </div>
+        </div>
+        <div class="history-legend" aria-label="Chart legend"><span><i class="legend-dot dust"></i>Dust coverage</span><span><i class="legend-dot confidence"></i>Model confidence</span></div>
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <caption class="sr-only">Recent solar panel inspections</caption>
+            <thead><tr><th scope="col">Date</th><th scope="col">Condition</th><th scope="col">Confidence</th><th scope="col">Dust coverage</th><th scope="col">Next cleaning</th></tr></thead>
+            <tbody id="historyRows"><tr><td colspan="5">Loading inspection history...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const apiBase = '';
+      const previewImage = document.getElementById('previewImage');
+      const overlayImage = document.getElementById('overlayImage');
+      const heatmapImage = document.getElementById('heatmapImage');
+
+      function setText(id, value) {
+        const node = document.getElementById(id);
+        if (node) node.textContent = value;
+      }
+
+      function setImage(id, value) {
+        const node = document.getElementById(id);
+        if (node) node.src = value || '';
+      }
+
+      async function readJsonResponse(response) {
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          if (response.redirected || response.url.includes('/login')) {
+            throw new Error('Your session expired. Please sign in again.');
+          }
+          throw new Error(`Server returned HTML instead of JSON (HTTP ${response.status}).`);
+        }
+        return response.json();
+      }
+
+      function renderMetrics(payload) {
+        setText('confidenceValue', payload.confidence ? `${payload.confidence.toFixed(1)}%` : '--');
+        setText('coverageValue', payload.dust_coverage ? `${payload.dust_coverage.toFixed(1)}%` : '--');
+        setText('coverageSourceValue', payload.coverage_source || 'Estimate');
+        setText('nextCleaningValue', payload.next_cleaning || '--');
+        setText('dustLevelValue', payload.dust_level || '--');
+        setText('efficiencyValue', payload.efficiency_loss == null ? 'Not measured' : `${payload.efficiency_loss.toFixed(1)}%`);
+        setText('actionValue', payload.action || '--');
+        setImage('overlayImage', payload.overlay_img ? `${apiBase}${payload.overlay_img}` : '');
+        setImage('heatmapImage', payload.heatmap_img ? `${apiBase}${payload.heatmap_img}` : '');
+        setImage('previewImage', payload.original_img ? `${apiBase}${payload.original_img}` : '');
+
+        const list = document.getElementById('recommendationsList');
+        list.innerHTML = '';
+        if (Array.isArray(payload.recommendations)) {
+          payload.recommendations.forEach((item) => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            list.appendChild(li);
+          });
+        }
+      }
+
+      document.getElementById('analyzeBtn').addEventListener('click', async () => {
+        const input = document.getElementById('imageInput');
+        if (!input.files || !input.files[0]) {
+          alert('Please choose an image first.');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', input.files[0]);
+        const response = await fetch(`${apiBase}/predict`, { method: 'POST', body: formData });
+        const data = await response.json();
+        if (!response.ok) {
+          alert(data.error || 'Prediction failed.');
+          return;
+        }
+        renderMetrics(data);
+        loadHistory();
+      });
+
+      function renderHistoryChart(history) {
+        const canvas = document.getElementById('historyChart');
+        const ctx = canvas.getContext('2d');
+        if (!history.length) {
+          ctx.clearRect(0,0,canvas.width,canvas.height);
+          ctx.fillStyle = '#64748b';
+          ctx.font = '600 14px Inter, sans-serif';
+          ctx.fillText('No history yet', 24, 40);
+          return;
+        }
+        const width = canvas.width;
+        const height = canvas.height;
+        ctx.clearRect(0,0,width,height);
+        ctx.strokeStyle = '#dbe3eb';
+        for (let i = 0; i <= 4; i++) {
+          const y = 20 + i * ((height - 40) / 4);
+          ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(width - 20, y); ctx.stroke();
+        }
+        const chartHeight = height - 60;
+        const xFor = (index) => 40 + (index * (width - 60)) / Math.max(history.length - 1, 1);
+        const yFor = (value) => height - 26 - (Math.max(0, Math.min(100, value)) / 100) * chartHeight;
+        const drawSeries = (field, color) => {
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          history.forEach((item, index) => {
+            const x = xFor(index);
+            const y = yFor(Number(item[field] || 0));
+            if (index === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          });
+          ctx.stroke();
+          history.forEach((item, index) => {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(xFor(index), yFor(Number(item[field] || 0)), 4, 0, Math.PI * 2);
+            ctx.fill();
+          });
+        };
+        drawSeries('dust_coverage', '#d97706');
+        drawSeries('confidence', '#102f4a');
+        ctx.fillStyle = '#64748b';
+        ctx.font = '600 12px Inter, sans-serif';
+        history.forEach((item, index) => {
+          const date = item.timestamp ? new Date(item.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : `#${index + 1}`;
+          const x = xFor(index);
+          ctx.save();
+          ctx.translate(x, height - 8);
+          ctx.rotate(-Math.PI / 8);
+          ctx.fillText(date, -18, 0);
+          ctx.restore();
+        });
+      }
+
+      function renderConditionChart(history) {
+        const canvas = document.getElementById('conditionChart');
+        const ctx = canvas.getContext('2d');
+        const clean = history.filter((item) => item.label === 'Clean').length;
+        const dusty = history.filter((item) => item.label === 'Dusty').length;
+        const total = clean + dusty;
+        const center = canvas.width / 2;
+        const radius = 78;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (!total) {
+          ctx.fillStyle = '#dbe3eb';
+          ctx.beginPath();
+          ctx.arc(center, center, radius, 0, Math.PI * 2);
+          ctx.fill();
+          setText('conditionSummary', 'No inspection data');
+          return;
+        }
+        let start = -Math.PI / 2;
+        [[clean, '#16834b'], [dusty, '#d97706']].forEach(([value, color]) => {
+          const slice = value / total * Math.PI * 2;
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.moveTo(center, center);
+          ctx.arc(center, center, radius, start, start + slice);
+          ctx.closePath();
+          ctx.fill();
+          start += slice;
+        });
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(center, center, 48, 0, Math.PI * 2);
+        ctx.fill();
+        const cleanPercent = Math.round(clean / total * 100);
+        const dustyPercent = Math.round(dusty / total * 100);
+        setText('conditionSummary', `Clean ${cleanPercent}% · Dusty ${dustyPercent}%`);
+      }
+
+      async function loadHistory() {
+        const response = await fetch(`${apiBase}/history`);
+        if (!response.ok) {
+          setText('historySummary', 'Unable to load inspection history.');
+          return;
+        }
+        const history = await response.json();
+        renderHistoryChart(history);
+        renderConditionChart(history);
+        const rows = document.getElementById('historyRows');
+        rows.innerHTML = '';
+        setText('historySummary', history.length ? `${history.length} inspection${history.length === 1 ? '' : 's'} recorded` : 'No inspections recorded yet');
+        if (!history.length) {
+          rows.innerHTML = '<tr><td colspan="5">No inspections recorded yet.</td></tr>';
+          return;
+        }
+        history.slice().reverse().slice(0, 8).forEach((item) => {
+          const row = document.createElement('tr');
+          const timestamp = item.timestamp ? new Date(item.timestamp).toLocaleDateString() : '--';
+          row.innerHTML = `<td>${timestamp}</td><td><span class="history-condition ${item.label === 'Clean' ? 'clean' : 'dusty'}">${item.label || '--'}</span></td><td>${Number(item.confidence || 0).toFixed(1)}%</td><td>${Number(item.dust_coverage || 0).toFixed(1)}%</td><td>${item.next_cleaning || '--'}</td>`;
+          rows.appendChild(row);
+        });
+      }
+
+      document.querySelectorAll('.tab-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach((btn) => btn.classList.remove('active'));
+          button.classList.add('active');
+          document.getElementById('image-panel').style.display = button.dataset.target === 'image-panel' ? 'grid' : 'none';
+          document.getElementById('video-panel').style.display = button.dataset.target === 'video-panel' ? 'grid' : 'none';
+        });
+      });
+
+      document.getElementById('videoBtn').addEventListener('click', async () => {
+        const input = document.getElementById('videoInput');
+        const button = document.getElementById('videoBtn');
+        const statusBox = document.getElementById('videoStatus');
+        if (!input.files || !input.files[0]) {
+          statusBox.textContent = 'Choose a video file first.';
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('video', input.files[0]);
+        formData.append('heatmap', 'true');
+        button.disabled = true;
+        statusBox.textContent = 'Uploading video...';
+        try {
+          const response = await fetch(`${apiBase}/predict_video`, { method: 'POST', body: formData });
+          const data = await readJsonResponse(response);
+          if (!response.ok || !data.video_id) {
+            throw new Error(data.error || data.status || 'Video upload failed.');
+          }
+          statusBox.textContent = 'Video uploaded. Processing frames...';
+          const video = document.getElementById('videoPreview');
+          video.src = URL.createObjectURL(input.files[0]);
+          video.style.display = 'block';
+          pollVideoStatus(data.video_id);
+        } catch (error) {
+          statusBox.textContent = `Video error: ${error.message}`;
+          button.disabled = false;
+        }
+      });
+
+      async function pollVideoStatus(videoId) {
+        const statusBox = document.getElementById('videoStatus');
+        const button = document.getElementById('videoBtn');
+        try {
+          const response = await fetch(`${apiBase}/video_status/${videoId}`);
+          const data = await readJsonResponse(response);
+          if (!response.ok) throw new Error(data.error || 'Could not read video status.');
+          if (data.status === 'complete' && data.video_url) {
+            const video = document.getElementById('videoPreview');
+            video.src = `${apiBase}${data.video_url}`;
+            video.style.display = 'block';
+            renderMetrics(data);
+            statusBox.textContent = `Video complete. ${data.frames_processed || 0} frames analyzed.`;
+            button.disabled = false;
+            loadHistory();
+            return;
+          }
+          if (data.status === 'error') {
+            throw new Error(data.error || 'Video processing failed.');
+          }
+          statusBox.textContent = `Processing video${Number.isFinite(data.percent) ? ` (${data.percent}%)` : '...'}`;
+          setTimeout(() => pollVideoStatus(videoId), 2000);
+        } catch (error) {
+          statusBox.textContent = `Video error: ${error.message}`;
+          button.disabled = false;
+        }
+      }
+
+      const mobileNavToggle = document.getElementById('mobileNavToggle');
+      const sidebar = document.getElementById('primaryNavigation');
+      mobileNavToggle.addEventListener('click', () => {
+        const isOpen = sidebar.classList.toggle('open');
+        mobileNavToggle.setAttribute('aria-expanded', String(isOpen));
+        mobileNavToggle.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+      });
+      document.querySelectorAll('.sidebar-link').forEach((link) => {
+        link.addEventListener('click', () => {
+          sidebar.classList.remove('open');
+          mobileNavToggle.setAttribute('aria-expanded', 'false');
+          mobileNavToggle.setAttribute('aria-label', 'Open navigation');
+        });
+      });
+      fetch(`${apiBase}/health`).then(async (response) => {
+        const data = await response.json();
+        const badge = document.getElementById('systemStatus');
+        badge.textContent = data.status === 'ok' ? 'System ready' : 'System unavailable';
+      }).catch(() => {
+        document.getElementById('systemStatus').textContent = 'System unavailable';
+      });
+
+      loadHistory();
+    </script>
+  </body>
+</html>
