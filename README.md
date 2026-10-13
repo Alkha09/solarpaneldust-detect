@@ -1,145 +1,230 @@
-# SolarSense corrected inference package
+# SolarSense — AI-Based Solar Panel Dust Detection
 
-## What was corrected
+SolarSense is an AI-powered solar panel inspection and maintenance system that analyzes uploaded images and videos to classify solar panels as **Clean** or **Dusty**. It uses a MobileNetV2 deep learning model to support panel condition assessment and provide maintenance recommendations.
 
-The supplied files mixed two incompatible pipelines:
+## Overview
 
-- `train_*.py` and `app_*.py` expected a TensorFlow EfficientNet model with a
-  one-value sigmoid output.
-- `model_*.pth` is a PyTorch MobileNetV2 checkpoint with a
-  `1280 -> 256 -> 2` classifier head.
+Dust accumulation on solar panels can reduce their ability to generate electricity. SolarSense helps users identify potentially dusty panels through image and video analysis, visualize suspected dust regions, and make informed maintenance decisions.
 
-This package uses the supplied PyTorch checkpoint consistently. It also fixes
-the heatmap by explaining the `Dusty` two-class logit, applying the same
-ImageNet normalization used by the classifier, masking coverage to the panel,
-and leaving the non-panel background unchanged in the overlay. Rendered
-heatmaps and processed videos are capped at 1920px on their largest side so
-4K uploads do not exhaust memory.
+## Key Features
 
-## Run an image test
+- **AI-Based Classification:** Classifies solar panel images as Clean or Dusty using MobileNetV2.
+- **Image Analysis:** Upload a solar panel image for AI prediction.
+- **Video Analysis:** Upload a video to analyze solar panel footage.
+- **Visual Explanations:** Uses Grad-CAM heatmaps to highlight image regions influencing the classifier's prediction.
+- **Dust Region Segmentation:** Supports an optional U-Net model for dust-region segmentation when a trained segmentation model is available.
+- **Prediction Confidence:** Displays the model's confidence score for its classification.
+- **Maintenance Recommendations:** Provides guidance based on the predicted panel condition.
+- **Efficiency-Loss Estimation:** Supports software-based estimates, with the method and assumptions identified in the results.
+- **Web Dashboard:** Provides a web interface for accessing detection and maintenance-related features.
 
-```bash
-cd corrected
-python test.py \
-  --model ../attached_assets/model_1789918225387.pth \
-  --image /path/to/panel-image.jpg \
-  --output-dir test_output
-```
+## How It Works
 
-The command writes `overlay.png` and `heatmap.png`.
+1. **Upload:** The user uploads a solar panel image or video through the web interface.
+2. **Preprocessing:** The application prepares image frames for the model using resizing and normalization.
+3. **AI Classification:** The MobileNetV2 model predicts whether the panel is Clean or Dusty.
+4. **Visual Analysis:** Grad-CAM generates a heatmap to show image regions that influenced the classification. If a trained segmentation model is available, it can provide a dust-region mask.
+5. **Results:** The application presents the predicted class, confidence score, and available visual results.
+6. **Maintenance Guidance:** SolarSense provides a maintenance recommendation based on the detected condition.
 
-## Run the API
+**Note:** Grad-CAM highlights influential image regions; it does not independently measure the exact percentage of dust. Any dust coverage or efficiency-loss estimate should be interpreted according to the method used.
 
-```bash
-cd corrected
-MODEL_PATH=../attached_assets/model_1789918225387.pth python app.py
-```
+## Image and Video Demonstrations
 
-The API provides:
+### Image Detection
 
-- `POST /predict` with multipart field `file`
-- `POST /predict_video` with multipart field `video`
-- `GET /video_status/<video_id>` for polling video progress
-- `GET /evaluate` for held-out validation accuracy, Dusty-positive precision,
-  recall/F1, per-class and macro metrics, and a row-actual / column-predicted
-  confusion matrix
-- `GET /health`
+Upload a solar panel image and view the original image alongside the AI analysis.
 
-The authenticated dashboard provides image and video analysis, side-by-side
-original/processed comparisons, dust coverage and classification, model
-confidence, and maintenance recommendations. Supported image formats are PNG,
-JPG/JPEG, and WebP; video uploads must be MP4. After analysis, download an HTML
-report with the results and media comparisons. Image report media is embedded;
-video reports link to the uploaded and processed videos.
+**Image upload and prediction interface**
 
-The dashboard's validation scores and score chart are measured on the
-deterministic, stratified 20% held-out split of `dataset/Clean` and
-`dataset/Dusty` for the currently loaded checkpoint. Accuracy uses all held-out
-predictions. The headline precision, recall, and F1 treat Dusty as the positive
-class and are calculated directly from TP, FP, and FN in the confusion matrix;
-macro-averaged metrics and per-class metrics are also returned separately. The
-confusion matrix shows actual labels as rows and predicted labels as columns.
-This validation split is for model evaluation, not a substitute for a separate
-external test set.
+_Add a screenshot of the image upload area here._
 
-## Retrain from a dataset
+`![SolarSense Image Detection](docs/images/image-detection.png)`
 
-```bash
-cd corrected
-python train.py --data-dir dataset --output model_mobilenetv2_trained.pth
-```
+**Prediction and heatmap results**
 
-The flat `dataset/Clean` and `dataset/Dusty` folders are split reproducibly
-into training, validation, and held-out test samples. Training initializes the
-MobileNetV2 feature extractor with ImageNet weights. The resulting checkpoint
-does not replace the currently configured `model.pth`; point `MODEL_PATH` at it
-to use it with `app.py`. Other folders in the dataset (for example Bird-drop,
-Electrical-damage, Physical-Damage, or Snow-Covered) are ignored by the
-binary Clean/Dusty panel-condition classifier and are not included in its
-reported metrics. Training saves a training-versus-validation cross-entropy
-loss graph, a held-out test confusion-matrix graph, and a JSON metrics report
-next to the checkpoint. The JSON includes Clean and Dusty class precision,
-recall, F1, and support, along with Dusty-positive precision/recall/F1,
-accuracy, and the actual-row/predicted-column confusion matrix. The test set
-is kept out of training and validation and is evaluated after selecting the
-checkpoint with the best validation accuracy.
+_Add a screenshot showing the Clean/Dusty prediction and Grad-CAM heatmap here._
 
-## Train measured dust segmentation
+`![SolarSense Prediction Results](docs/images/image-results.png)`
 
-Classification folders (`Clean` and `Dusty`) cannot provide measured pixel
-coverage. For measured coverage, create paired annotations with this layout:
+### Video Detection
+
+Upload a video containing solar panel footage for analysis.
+
+**Video upload interface**
+
+_Add a screenshot of the video upload area here._
+
+`![SolarSense Video Upload](docs/images/video-upload.png)`
+
+**Video analysis results**
+
+_Add a screenshot showing the video analysis output here._
+
+`![SolarSense Video Results](docs/images/video-results.png)`
+
+To display these images on GitHub, create the `docs/images/` folder in your repository and place the corresponding screenshots there. Replace the example filenames with your actual screenshot filenames.
+
+## Model Training and Evaluation
+
+SolarSense uses a MobileNetV2 feature extractor with a custom classification head to predict two classes: Clean and Dusty.
+
+### Evaluation Setup
+
+| Parameter | Value |
+|---|---|
+| Model | MobileNetV2 |
+| Classes | Clean, Dusty |
+| Test samples | 680 |
+| Clean samples | 337 |
+| Dusty samples | 343 |
+| Split | Stratified 80/20 |
+| Random seed | 42 |
+| Positive class for metrics | Dusty |
+
+*The 680 samples are the held-out test set. Confirm that this matches the split used by your evaluation script.*
+
+### Test Results
+
+| Metric | Score |
+|---|---:|
+| Accuracy | 81.47% |
+| Dusty Precision | 90.04% |
+| Dusty Recall | 71.14% |
+| Dusty F1-score | 79.48% |
+
+### Confusion Matrix
+
+Rows represent the actual class; columns represent the predicted class.
+
+| Actual / Predicted | Clean | Dusty |
+|---|---:|---:|
+| Clean | 310 | 27 |
+| Dusty | 99 | 244 |
+
+### Understanding the Results
+
+- **Accuracy — 81.47%:** The model correctly classified 554 out of 680 test samples.
+- **Precision — 90.04%:** Of the samples predicted as Dusty, approximately 90% were actually Dusty.
+- **Recall — 71.14%:** The model identified approximately 71% of all actual Dusty samples.
+- **F1-score — 79.48%:** Summarizes the balance between Dusty precision and recall.
+
+The results show strong precision for Dusty predictions, while improving the detection of dusty panels that are currently missed is an important area for future work.
+
+### Training and Evaluation Graphs
+
+Add the graphs generated by your training and evaluation scripts here.
+
+**Training and validation loss**
+
+`![Training and Validation Loss](docs/images/loss-graph.png)`
+
+**Confusion matrix**
+
+`![Confusion Matrix](docs/images/confusion-matrix.png)`
+
+**Additional metrics**
+
+`![Model Evaluation Metrics](docs/images/metrics.png)`
+
+Use the actual generated graph filenames. Do not include placeholder images as if they were real evaluation results.
+
+## Technology Stack
+
+- **Language:** Python
+- **Deep Learning:** PyTorch
+- **Model:** MobileNetV2
+- **Web Framework:** Flask
+- **Image and Video Processing:** OpenCV
+- **Visualization:** Grad-CAM and optional U-Net segmentation
+- **Frontend:** HTML, CSS, JavaScript
+
+## Project Structure
 
 ```text
-segmentation/
-  images/
-    panel_001.jpg
-  masks/
-    panel_001.png
+SolarSense/
+├── app.py
+├── model.py
+├── model.pth
+├── gradcam.py
+├── segmentation.py
+├── efficiency_model.py
+├── dust_level.py
+├── video_processor.py
+├── train.py
+├── train_segmentation.py
+├── annotate_masks.py
+├── test.py
+├── requirements.txt
+├── templates/
+├── static/
+├── tests/
+├── docs/
+│   └── images/
+└── README.md
 ```
 
-Each mask must be grayscale PNG: `255` for dust pixels and `0` for non-dust.
-You can create masks interactively with:
+## Installation and Usage
+
+### 1. Clone the Repository
 
 ```bash
-python annotate_masks.py --images segmentation/images --masks segmentation/masks
+git clone https://github.com/Alkha09/solarpaneldust-detect.git
+cd solarpaneldust-detect
 ```
 
-Paint dust with the left mouse button, erase with the right button, press `S`
-to save, and press `N` to skip.
-Train and validate the U-Net with:
+### 2. Create a Virtual Environment
 
 ```bash
-python train_segmentation.py --images segmentation/images --masks segmentation/masks --output segmentation_model.pth
+python -m venv venv
 ```
 
-Then start the app with `segmentation_model.pth` beside `app.py` (or set
-`SEGMENTATION_MODEL_PATH`). The dashboard will report `U-Net pixel
-segmentation`; without that checkpoint it reports `Grad-CAM estimate`.
+Activate it on Windows:
 
-Efficiency loss prefers a measurement when the server has these physical
-readings configured:
-
-```text
-Efficiency Loss (%) = (eta_clean - eta_dusty) / eta_clean * 100
-eta = power (W) / irradiance (W/m2)
+```bash
+venv\Scripts\activate
 ```
 
-```powershell
-$env:CLEAN_POWER_W = "1000"
-$env:DUSTY_POWER_W = "800"
-$env:CLEAN_IRRADIANCE_W_M2 = "1000"
-$env:DUSTY_IRRADIANCE_W_M2 = "1000"
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Start the Application
+
+```bash
 python app.py
 ```
 
-Without all four readings, the dashboard uses a Random Forest trained on
-synthetic samples generated from the provisional assumption
-`estimated loss (%) = 0.2 x dust coverage (%)`. The result is labeled as a
-synthetic estimate, not as a physical measurement or a validated prediction.
-Its accuracy must not be assumed until calibrated and evaluated against
-real-world clean/dusty panel power and irradiance measurements. The estimate
-is capped at 20% for the 0-100% coverage range.
+Open the local address shown in the terminal, commonly:
 
-The old `dashboard_*.py` file is JavaScript, not Python, and also depends on an
-HTML template that was not included in the upload. It should be renamed to
-`dashboard.js` if it is retained as a frontend script.
+`http://127.0.0.1:5000`
+
+Ensure the required model checkpoint is present before running predictions.
+
+## Efficiency-Loss Estimation
+
+SolarSense can estimate potential efficiency loss using available panel measurements or a provisional software-based estimate.
+
+When measured power and irradiance data are unavailable, a simplified estimate may be used:
+
+**Estimated loss (%) = 0.2 × estimated dust coverage (%)**
+
+This provisional assumption caps the estimated loss at 20% for 100% dust coverage. It is a synthetic approximation, not a validated physical relationship. It should not be presented as measured efficiency loss until tested against real solar panel data.
+
+## Future Improvements
+
+- Improve Dusty-class recall using additional representative training data.
+- Validate dust coverage and efficiency-loss estimates against real measurements.
+- Improve video analysis and frame-level reporting.
+- Add more segmentation annotations and evaluate segmentation performance.
+- Deploy the application to a public hosting platform.
+
+## Disclaimer
+
+SolarSense is a decision-support and inspection tool. Predictions, heatmaps, and software-based efficiency estimates may contain errors and should not replace physical inspection or measured solar panel performance data.
+
+## Author
+
+Alkha
