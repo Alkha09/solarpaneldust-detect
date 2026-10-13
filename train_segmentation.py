@@ -20,8 +20,12 @@ from torch import nn
 from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision import transforms
 
-from model import DEVICE
-from segmentation import SEGMENTATION_SIZE, UNet, dice_score, iou_score
+try:
+    from .model import DEVICE
+    from .segmentation import SEGMENTATION_SIZE, UNet, dice_score, iou_score
+except ImportError:  # pragma: no cover - script execution fallback
+    from model import DEVICE
+    from segmentation import SEGMENTATION_SIZE, UNet, dice_score, iou_score
 
 
 class DustMaskDataset(Dataset):

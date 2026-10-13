@@ -12,9 +12,14 @@ from pathlib import Path
 
 import cv2
 
-from dust_level import analyze_dust
-from gradcam import apply_dust_heatmap, read_bgr
-from model import load_model, predict_rgb
+try:
+    from .dust_level import analyze_dust
+    from .gradcam import apply_dust_heatmap, read_bgr
+    from .model import load_model, predict_rgb
+except ImportError:  # pragma: no cover - script execution fallback
+    from dust_level import analyze_dust
+    from gradcam import apply_dust_heatmap, read_bgr
+    from model import load_model, predict_rgb
 
 
 def main() -> None:

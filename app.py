@@ -14,16 +14,27 @@ import time
 import uuid
 
 import cv2
+import torch
 from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
-from dust_level import analyze_dust, calculate_efficiency_loss
-from gradcam import apply_dust_heatmap
-from model import DEVICE, load_model, predict_rgb
-from segmentation import load_segmentation_model, predict_dust_mask
-from train import evaluate_flat_dataset
-from video_processor import process_video
+try:
+    from .dust_level import analyze_dust, calculate_efficiency_loss
+    from .efficiency_model import SIMULATION_SOURCE, estimate_efficiency_loss
+    from .gradcam import apply_dust_heatmap
+    from .model import DEVICE, load_model, predict_rgb
+    from .segmentation import load_segmentation_model, predict_dust_mask
+    from .train import evaluate_flat_dataset
+    from .video_processor import process_video
+except ImportError:  # pragma: no cover - script execution fallback
+    from dust_level import analyze_dust, calculate_efficiency_loss
+    from efficiency_model import SIMULATION_SOURCE, estimate_efficiency_loss
+    from gradcam import apply_dust_heatmap
+    from model import DEVICE, load_model, predict_rgb
+    from segmentation import load_segmentation_model, predict_dust_mask
+    from train import evaluate_flat_dataset
+    from video_processor import process_video
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -39,6 +50,8 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "solar-sense-demo-secret")
 app.config["MAX_CONTENT_LENGTH"] = 512 * 1024 * 1024
 app.config["MODEL_PATH"] = str(MODEL_PATH)
+if DEVICE.type == "cpu":
+    torch.set_num_threads(min(4, torch.get_num_threads()))
 model = load_model(MODEL_PATH)
 SEGMENTATION_MODEL_PATH = Path(os.environ.get("SEGMENTATION_MODEL_PATH", BASE_DIR / "segmentation_model.pth"))
 try:
@@ -67,12 +80,33 @@ def _configured_efficiency_loss() -> float | None:
         return None
 
 
+def _resolved_efficiency_loss(
+    model_loss: float | None = None,
+    dust_coverage: float | None = None,
+) -> float | None:
+    """Prefer measured loss; otherwise use the explicitly simulated RF estimate."""
+    measured_loss = _configured_efficiency_loss()
+    if measured_loss is not None:
+        return measured_loss
+    if dust_coverage is not None:
+        return estimate_efficiency_loss(dust_coverage)
+    return model_loss
+
+
+def _efficiency_loss_source(dust_coverage: float | None) -> str:
+    if _configured_efficiency_loss() is not None:
+        return "Measured from configured power and irradiance readings."
+    if dust_coverage is not None:
+        return SIMULATION_SOURCE
+    return "Unavailable: no dust coverage estimate."
+
+
 @app.errorhandler(413)
 def request_entity_too_large(_error):
     return jsonify({"error": "The uploaded file is too large. Maximum size is 512 MB."}), 413
 
 ALLOWED_IMAGES = {"png", "jpg", "jpeg", "webp"}
-ALLOWED_VIDEOS = {"mp4", "avi", "mov", "mkv", "webm"}
+ALLOWED_VIDEOS = {"mp4"}
 
 
 def _allowed(filename: str, extensions: set[str]) -> bool:
@@ -143,6 +177,7 @@ def _save_history(user: str, result: dict) -> None:
         "confidence": float(result.get("confidence", 0.0) or 0.0),
         "dust_coverage": float(result.get("dust_coverage", 0.0) or 0.0),
         "efficiency_loss": result.get("efficiency_loss"),
+        "efficiency_loss_source": result.get("efficiency_loss_source"),
         "next_cleaning": result.get("next_cleaning"),
         "action": result.get("action"),
     }
@@ -184,32 +219,44 @@ def _image_result(file_path: Path, uid: str) -> dict:
 
     overlay_name = f"overlay_{uid}.png"
     heatmap_name = f"heatmap_{uid}.png"
-    cv2.imwrite(
+    overlay_written = cv2.imwrite(
         str(RESULT_DIR / overlay_name),
         cv2.cvtColor(overlay_rgb, cv2.COLOR_RGB2BGR),
     )
-    cv2.imwrite(
+    heatmap_written = cv2.imwrite(
         str(RESULT_DIR / heatmap_name),
         cv2.cvtColor(heatmap_rgb, cv2.COLOR_RGB2BGR),
     )
+    if not overlay_written:
+        app.logger.warning("Could not save generated dust overlay: %s", overlay_name)
+    if not heatmap_written:
+        app.logger.warning("Could not save generated dust heatmap: %s", heatmap_name)
 
     analysis = analyze_dust(confidence, coverage, label)
-    return {
+    result = {
         "label": label,
         "confidence": analysis.confidence,
         "dust_coverage": analysis.dust_coverage,
         "coverage_source": coverage_source,
         "dust_level": analysis.dust_level,
         "level_color": analysis.level_color,
-        "efficiency_loss": _configured_efficiency_loss(),
+        "efficiency_loss": _resolved_efficiency_loss(
+            analysis.efficiency_loss, analysis.dust_coverage
+        ),
+        "efficiency_loss_source": _efficiency_loss_source(
+            analysis.dust_coverage
+        ),
         "action": analysis.maintenance_action,
         "priority": analysis.maintenance_priority,
         "next_cleaning": analysis.next_cleaning_date,
         "recommendations": analysis.recommendations,
         "original_img": f"/uploads/{file_path.name}",
-        "overlay_img": f"/results/{overlay_name}",
-        "heatmap_img": f"/results/{heatmap_name}",
     }
+    if overlay_written:
+        result["overlay_img"] = f"/results/{overlay_name}"
+    if heatmap_written:
+        result["heatmap_img"] = f"/results/{heatmap_name}"
+    return result
 
 
 def _login_required(view):
@@ -323,22 +370,25 @@ def efficiency_loss():
 @app.get("/evaluate")
 @_login_required
 def evaluate():
-    dataset_dir = None
-    for candidate in (BASE_DIR / "dataset", BASE_DIR / "dataset" / "test", BASE_DIR / "dataset" / "train"):
-        if candidate.exists() and next(candidate.iterdir(), None) is not None:
-            dataset_dir = candidate
-            break
-    if dataset_dir is None:
+    flat_dataset = BASE_DIR / "dataset"
+    if all((flat_dataset / class_name).is_dir() for class_name in ("Clean", "Dusty")):
+        dataset_dir = flat_dataset
+    else:
         return jsonify({
-            "accuracy": 0.0,
-            "f1_score": 0.0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "confusion_matrix": [[0, 0], [0, 0]],
-            "dataset": "not-found",
-        })
+            "error": (
+                "Validation images were not found. Add Clean and Dusty folders "
+                "under corrected/dataset, or provide a supported held-out dataset."
+            ),
+        }), 404
 
-    metrics = evaluate_flat_dataset(model, dataset_dir, test_fraction=0.2, batch_size=8)
+    try:
+        metrics = evaluate_flat_dataset(
+            model, dataset_dir, test_fraction=0.2, batch_size=32
+        )
+    except (OSError, ValueError) as exc:
+        return jsonify({"error": f"Could not evaluate the validation dataset: {exc}"}), 422
+    metrics["model"] = Path(app.config["MODEL_PATH"]).name
+    metrics["evaluation_type"] = "held-out validation"
     return jsonify(metrics)
 
 
@@ -365,8 +415,10 @@ def predict():
 
 def _run_video(input_path: Path, output_path: Path, uid: str, user: str, skip: int, heatmap: bool):
     try:
+        output_path.unlink(missing_ok=True)
+
         def progress(percent: int, stats: dict) -> None:
-            # The API remains usable without Flask-SocketIO.  Progress is
+            # The API remains usable without Flask-SocketIO. Progress is
             # persisted for polling at /video_status/<uid>.
             _write_video_status(uid, {
                 "status": "processing",
@@ -383,12 +435,14 @@ def _run_video(input_path: Path, output_path: Path, uid: str, user: str, skip: i
             progress_cb=progress,
             segmentation_model=segmentation_model,
         )
+        if not output_path.exists() or output_path.stat().st_size <= 0:
+            raise RuntimeError(
+                "Processed video was not saved to disk or is empty: "
+                f"{output_path}."
+            )
+
         overall_label = summary.get("overall_label", "Clean")
-        maintenance_label = (
-            "Dusty"
-            if summary.get("avg_coverage", 0.0) >= 15.0
-            else overall_label
-        )
+        maintenance_label = overall_label
         video_analysis = analyze_dust(
             summary.get("avg_confidence", 0.0),
             summary.get("avg_coverage", 0.0),
@@ -398,7 +452,12 @@ def _run_video(input_path: Path, output_path: Path, uid: str, user: str, skip: i
             "label": overall_label,
             "confidence": video_analysis.confidence,
             "dust_coverage": video_analysis.dust_coverage,
-            "efficiency_loss": video_analysis.efficiency_loss,
+            "efficiency_loss": _resolved_efficiency_loss(
+                video_analysis.efficiency_loss, video_analysis.dust_coverage
+            ),
+            "efficiency_loss_source": _efficiency_loss_source(
+                video_analysis.dust_coverage
+            ),
             "next_cleaning": video_analysis.next_cleaning_date,
             "action": video_analysis.maintenance_action,
         })
@@ -408,17 +467,30 @@ def _run_video(input_path: Path, output_path: Path, uid: str, user: str, skip: i
             "confidence": video_analysis.confidence,
             "dust_coverage": video_analysis.dust_coverage,
             "dust_level": video_analysis.dust_level,
-            "efficiency_loss": video_analysis.efficiency_loss,
+            "efficiency_loss": _resolved_efficiency_loss(
+                video_analysis.efficiency_loss, video_analysis.dust_coverage
+            ),
+            "efficiency_loss_source": _efficiency_loss_source(
+                video_analysis.dust_coverage
+            ),
             "action": video_analysis.maintenance_action,
             "next_cleaning": video_analysis.next_cleaning_date,
             "recommendations": video_analysis.recommendations,
-            "efficiency_loss": _configured_efficiency_loss(),
             "status": "complete",
+            "original_video_url": f"/video_uploads/{input_path.name}",
             "video_url": f"/videos/{output_path.name}",
         })
         _write_video_status(uid, summary)
     except Exception as exc:
-        _write_video_status(uid, {"status": "error", "error": str(exc)})
+        if output_path.exists() and output_path.stat().st_size <= 0:
+            output_path.unlink(missing_ok=True)
+        _write_video_status(
+            uid,
+            {
+                "status": "error",
+                "error": f"Video processing failed: {exc}",
+            },
+        )
 
 
 @app.post("/predict_video")
@@ -497,6 +569,11 @@ def results(filename: str):
 @app.get("/videos/<path:filename>")
 def videos(filename: str):
     return send_from_directory(VIDEO_RESULT_DIR, filename)
+
+
+@app.get("/video_uploads/<path:filename>")
+def video_uploads(filename: str):
+    return send_from_directory(VIDEO_UPLOAD_DIR, filename)
 
 
 if __name__ == "__main__":

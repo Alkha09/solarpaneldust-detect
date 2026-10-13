@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>SolarScan AI — Login</title>
+  <title>SolarSense | Sign in</title>
 
   <style>
     * {
@@ -599,129 +599,221 @@
         padding-bottom: 25px;
       }
     }
+    :root {
+      --bg: #f3f5f4;
+      --card: #ffffff;
+      --border: #dce3df;
+      --text: #202a25;
+      --muted: #68736d;
+      --blue: #287454;
+      --purple: #1e6045;
+      --cyan: #287454;
+      --green: #287454;
+      --error: #a4261d;
+      --error-bg: #fdf0ef;
+    }
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+    body::before, body::after, .solar-background { display: none; }
+    header {
+      padding: 16px 5vw;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+    .logo { gap: 11px; }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 7px;
+      background: #e9f2ed;
+      box-shadow: none;
+    }
+    .sun { color: var(--blue); font-size: 22px; }
+    .brand-name { color: var(--text); font-size: 1.05rem; letter-spacing: 0; }
+    .brand-name span { color: var(--text); background: none; }
+    .tagline { color: var(--muted); font-size: .8rem; }
+    .content {
+      width: 100%;
+      max-width: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      padding: 40px 20px;
+    }
+    .hero { display: none; }
+    .login-wrapper { width: min(100%, 430px); }
+    .login-card {
+      max-width: none;
+      padding: 32px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(23, 37, 30, .06);
+      backdrop-filter: none;
+      animation: none;
+    }
+    .login-heading { margin-bottom: 24px; text-align: left; }
+    .login-heading h2 { margin-bottom: 6px; color: var(--text); font-size: 1.55rem; }
+    .login-heading p { color: var(--muted); font-size: .9rem; }
+    .form-group { margin-bottom: 16px; }
+    .input-container { position: relative; }
+    .input-icon { display: none; }
+    .floating-label {
+      position: static;
+      display: block;
+      margin-bottom: 6px;
+      color: #3e4c44;
+      font-size: .85rem;
+      font-weight: 600;
+    }
+    input:not([type="checkbox"]) {
+      width: 100%;
+      height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #cbd5cf;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: .9rem;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    input:not([type="checkbox"]):focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(40, 116, 84, .12);
+    }
+    input::placeholder { color: #7b8780; }
+    #password { padding-right: 64px; }
+    .password-toggle {
+      right: 8px;
+      padding: 6px 8px;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--blue);
+      font-size: .8rem;
+      font-weight: 600;
+    }
+    .form-options { display: none; }
+    .sign-in {
+      width: 100%;
+      height: 44px;
+      margin-top: 6px;
+      border: 1px solid var(--purple);
+      border-radius: 6px;
+      background: var(--blue);
+      color: #fff;
+      font-size: .9rem;
+      font-weight: 600;
+      box-shadow: none;
+      transition: background-color .15s ease;
+    }
+    .sign-in:hover { transform: none; background: var(--purple); box-shadow: none; }
+    .arrow { display: none; }
+    .divider, .google-btn { display: none; }
+    .signup {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: .86rem;
+    }
+    .signup a { color: var(--blue); }
+    .signup a:hover { color: var(--purple); }
+    .error {
+      border-color: #efc7c3;
+      border-radius: 6px;
+      background: var(--error-bg);
+      color: var(--error);
+    }
+    footer {
+      justify-content: center;
+      padding: 16px 20px;
+      color: var(--muted);
+    }
+    .footer-content { gap: 8px; }
+    .footer-leaf { display: none; }
+    .toast { display: none; }
+    @media (max-width: 600px) {
+      header { padding: 14px 18px; }
+      .content { padding: 28px 16px; }
+      .login-card { padding: 26px 22px; border-radius: 8px; }
+      footer { padding-bottom: 16px; }
+    }
   </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='auth-redesign.css') }}" />
 </head>
 
-<body>
-  <div class="solar-background"></div>
-
+<body class="login-page">
   <div class="page">
     <header>
       <div class="logo">
-        <div class="logo-icon">
-          <span class="sun">☀️</span>
+        <div class="logo-icon" aria-hidden="true">
+          <svg class="solar-logo-icon" viewBox="0 0 32 32" focusable="false">
+            <circle cx="16" cy="10" r="5"></circle>
+            <path d="M16 1v2M7.5 4.5l1.4 1.4m14.2 0 1.4-1.4M3 10h3m20 0h3M9 19h14l3 10H6l3-10Zm2 0 1 10m8-10-1 10m-11-5h16"></path>
+          </svg>
         </div>
 
         <div>
-          <div class="brand-name">
-            SolarScan <span>AI</span>
-          </div>
-          <div class="tagline">Clean Energy. Smarter Monitoring.</div>
+          <div class="brand-name">SolarSense</div>
+          <div class="tagline">Panel monitoring</div>
         </div>
       </div>
     </header>
 
     <main class="content">
-      <section class="hero">
-        <h1>
-          Smarter Vision for
-          <strong>Cleaner Solar Energy</strong>
-        </h1>
-
-        <p class="hero-description">
-          AI-powered solar panel monitoring to detect dust, predict maintenance and keep your panels performing at their best.
-        </p>
-
-        <div class="features">
-          <div class="feature">
-            <div class="feature-icon">✨</div>
-            <div class="feature-text">
-              <h3>AI-Powered Analysis</h3>
-              <p>Detect dust and panel issues with high accuracy.</p>
-            </div>
-          </div>
-
-          <div class="feature">
-            <div class="feature-icon">📊</div>
-            <div class="feature-text">
-              <h3>Real-time Insights</h3>
-              <p>Get confidence scores, heatmaps and more.</p>
-            </div>
-          </div>
-
-          <div class="feature">
-            <div class="feature-icon">📅</div>
-            <div class="feature-text">
-              <h3>Predictive Maintenance</h3>
-              <p>Keep your panels efficient and reduce downtime.</p>
-            </div>
-          </div>
-
-          <div class="feature">
-            <div class="feature-icon">🌿</div>
-            <div class="feature-text">
-              <h3>A Cleaner, Greener Future</h3>
-              <p>More energy. Less waste. A healthier planet.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="quote">“The sun is a daily reminder that we too can rise again.”</div>
-      </section>
-
       <section class="login-wrapper">
         <div class="login-card">
           <div class="login-heading">
-            <h2>Welcome Back</h2>
-            <p>Sign in to your SolarScan AI account</p>
+            <h2>Sign in</h2>
+            <p>Enter your account details to continue.</p>
           </div>
 
           <form id="loginForm" method="post" action="/login">
             <div class="form-group">
-              <div class="input-container">
-                <span class="input-icon">👤</span>
-                <label class="floating-label" for="username">Username</label>
-                <input id="username" name="username" type="text" placeholder="Enter your username" autocomplete="username" required />
-              </div>
+              <label class="floating-label" for="username">Username</label>
+              <input id="username" name="username" type="text" placeholder="Enter your username" autocomplete="username" aria-describedby="usernameHint" required />
+              <span class="field-hint" id="usernameHint">Enter the username associated with your account.</span>
             </div>
 
             <div class="form-group">
               <div class="input-container">
-                <span class="input-icon">🔒</span>
                 <label class="floating-label" for="password">Password</label>
-                <input id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required />
-                <button type="button" class="password-toggle" id="togglePassword" aria-label="Show password">👁</button>
+                <input id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" aria-describedby="passwordHint" required />
+                <button type="button" class="password-toggle" id="togglePassword" aria-label="Show password" aria-controls="password">
+                  <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <svg class="eye-off-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a15 15 0 0 1-3 3.8M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10 10 0 0 0 4.1-.9"></path>
+                  </svg>
+                  <span class="sr-only">Show password</span>
+                </button>
               </div>
+              <span class="field-hint" id="passwordHint">Enter your account password.</span>
             </div>
 
-            <div class="form-options">
-              <label class="remember">
-                <input type="checkbox" id="remember" />
-                <span>Remember me</span>
-              </label>
-              <a href="#" class="forgot" onclick="forgotPassword(event)">Forgot password?</a>
-            </div>
-
-            <button type="submit" class="sign-in">
-              Sign In
-              <span class="arrow">→</span>
+            <button type="submit" class="sign-in" id="signInButton">
+              <span class="button-spinner" aria-hidden="true"></span>
+              <span id="signInButtonText">Sign in</span>
             </button>
+            <p class="login-status sr-only" id="loginStatus" role="status" aria-live="polite"></p>
 
             {% if error %}
               <div class="error" role="alert">{{ error }}</div>
             {% endif %}
           </form>
 
-          <div class="divider"><span>OR</span></div>
-
-          <button type="button" class="google-btn" onclick="googleLogin()">
-            <span class="google-icon">G</span>
-            Continue with Google
-          </button>
-
           <div class="signup">
             Don't have an account?
-            <a href="/register" onclick="signup(event)">Sign up</a>
+            <a href="/register">Create account</a>
           </div>
         </div>
       </section>
@@ -729,63 +821,41 @@
 
     <footer>
       <div class="footer-content">
-        <span class="footer-leaf">🌿</span>
-        <span>Sustainable Energy</span>
+        <span>SolarSense</span>
         <span>|</span>
-        <span>SolarScan AI</span>
-        <span>|</span>
-        <span>v1.0</span>
+        <span>Panel monitoring</span>
       </div>
     </footer>
   </div>
-
-  <div class="toast" id="toast"></div>
 
   <script>
     const passwordInput = document.getElementById("password");
     const togglePassword = document.getElementById("togglePassword");
     const loginForm = document.getElementById("loginForm");
+    const signInButton = document.getElementById("signInButton");
+    const signInButtonText = document.getElementById("signInButtonText");
+    const loginStatus = document.getElementById("loginStatus");
 
     togglePassword.addEventListener("click", () => {
-      if (passwordInput.type === "password") {
+      const showingPassword = passwordInput.type === "password";
+      if (showingPassword) {
         passwordInput.type = "text";
-        togglePassword.textContent = "🙈";
+        togglePassword.setAttribute("aria-label", "Hide password");
       } else {
         passwordInput.type = "password";
-        togglePassword.textContent = "👁";
+        togglePassword.setAttribute("aria-label", "Show password");
       }
+      togglePassword.querySelector(".sr-only").textContent =
+        showingPassword ? "Hide password" : "Show password";
     });
 
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      toast.textContent = message;
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 3000);
-    }
-
-    loginForm.addEventListener("submit", function (event) {
-      const username = document.getElementById("username").value.trim();
-      const password = passwordInput.value.trim();
-
-      if (!username || !password) {
-        event.preventDefault();
-        showToast("Please enter your username and password.");
-      }
+    loginForm.addEventListener("submit", () => {
+      signInButton.disabled = true;
+      signInButton.classList.add("is-loading");
+      signInButtonText.textContent = "Signing in…";
+      loginStatus.textContent = "Signing in. Please wait.";
+      loginForm.setAttribute("aria-busy", "true");
     });
-
-    function googleLogin() {
-      showToast("Google authentication will be connected here.");
-    }
-
-    function forgotPassword(event) {
-      event.preventDefault();
-      showToast("Password reset functionality coming soon.");
-    }
-
-    function signup(event) {
-      event.preventDefault();
-      window.location.href = "/register";
-    }
   </script>
 </body>
 </html>

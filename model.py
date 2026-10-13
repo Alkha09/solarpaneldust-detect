@@ -29,9 +29,10 @@ IMAGENET_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 IMAGENET_STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
 
-def build_model() -> nn.Module:
-    """Build the exact architecture used by model_*.pth."""
-    model = models.mobilenet_v2(weights=None)
+def build_model(pretrained: bool = False) -> nn.Module:
+    """Build the MobileNetV2 classifier, optionally with ImageNet features."""
+    weights = models.MobileNet_V2_Weights.DEFAULT if pretrained else None
+    model = models.mobilenet_v2(weights=weights)
     model.classifier = nn.Sequential(
         nn.Dropout(0.4),
         nn.Linear(model.last_channel, 256),

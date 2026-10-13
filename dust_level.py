@@ -47,6 +47,7 @@ def analyze_dust(
     coverage = round(max(0.0, min(100.0, float(dust_coverage_percent))), 1)
 
     if label == "Clean":
+        coverage = 0.0
         level = "Clean"
         color = "#22c55e"
         loss = None

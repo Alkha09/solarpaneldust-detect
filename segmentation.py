@@ -16,8 +16,12 @@ from PIL import Image
 from torch import nn
 from torchvision import transforms
 
-from gradcam import detect_panel_mask
-from model import DEVICE
+try:
+    from .gradcam import detect_panel_mask
+    from .model import DEVICE
+except ImportError:  # pragma: no cover - script execution fallback
+    from gradcam import detect_panel_mask
+    from model import DEVICE
 
 SEGMENTATION_SIZE = 256
 

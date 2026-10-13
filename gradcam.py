@@ -17,7 +17,10 @@ import cv2
 import numpy as np
 import torch
 
-from model import preprocess_rgb, predict_tensor
+try:
+    from .model import preprocess_rgb, predict_tensor
+except ImportError:  # pragma: no cover - script execution fallback
+    from model import preprocess_rgb, predict_tensor
 
 
 # Full-resolution 4K frames create several temporary float arrays during
@@ -178,15 +181,16 @@ def apply_dust_heatmap(
     image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
     image_tensor = preprocess_rgb(image_rgb)
 
-    # Determine the class first for the caller, then explain the Dusty logit.
-    # This is a dust-localization map, not a generic "what did the model see?"
-    # map.  Using class 1 also avoids the old sigmoid/class-0 mismatch.
-    _predicted_index, _confidence, _probabilities = predict_tensor(
+    predicted_index, _confidence, _probabilities = predict_tensor(
         model, image_tensor
     )
+    # Explain the class the model actually predicted instead of forcing a Dusty
+    # explanation for every image. This keeps the heatmap aligned with the
+    # classification result and prevents clean panels from showing dust-like
+    # activation maps.
     cam_runner = GradCAM(model, _find_target_layer(model))
     try:
-        raw_cam = cam_runner(image_tensor, target_class=1)
+        raw_cam = cam_runner(image_tensor, target_class=int(predicted_index))
     finally:
         cam_runner.remove_hooks()
 

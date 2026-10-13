@@ -241,110 +241,363 @@
         .grid, .metrics-grid, .results-grid { grid-template-columns: 1fr; }
         .card { padding: 18px; }
       }
+      :root {
+        --bg: #f3f5f4;
+        --bg-2: #f3f5f4;
+        --panel: #ffffff;
+        --panel-2: #f7f9f8;
+        --primary: #287454;
+        --primary-strong: #1e6045;
+        --accent: #b87916;
+        --good: #287454;
+        --warn: #a4610b;
+        --bad: #b42318;
+        --text: #202a25;
+        --muted: #68736d;
+        --line: #dce3df;
+        --navy: #287454;
+        --shadow: 0 1px 3px rgba(23, 37, 30, .06);
+      }
+      body {
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+      body::before { display: none; }
+      .container {
+        width: min(calc(100% - 256px), 1500px);
+        max-width: none;
+        margin: 0 0 0 256px;
+        padding: 30px 36px 56px;
+      }
+      .sidebar {
+        width: 256px;
+        padding: 24px 16px;
+        background: #fff;
+        color: var(--text);
+        border-right: 1px solid var(--line);
+        box-shadow: none;
+        backdrop-filter: none;
+      }
+      .sidebar-brand { margin: 0 8px 30px; }
+      .sidebar-brand strong { color: var(--text); letter-spacing: 0; }
+      .sidebar-brand small { color: var(--muted); }
+      .brand-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: #e9f2ed;
+        color: var(--primary-strong);
+        box-shadow: none;
+      }
+      .sidebar nav { display: grid; gap: 4px; }
+      .sidebar-link {
+        padding: 10px 12px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        color: #4e5b54;
+        font-size: .88rem;
+        font-weight: 600;
+        transition: background-color .15s ease, color .15s ease;
+      }
+      .sidebar-link:hover, .sidebar-link.active {
+        transform: none;
+        border-color: #e1ebe5;
+        background: #edf4f0;
+        color: var(--primary-strong);
+      }
+      .sidebar-link.active::before { background: var(--primary); }
+      .sidebar-note {
+        left: 24px;
+        right: 24px;
+        padding-top: 14px;
+        border-color: var(--line);
+        color: var(--muted);
+      }
+      .sidebar-note strong { color: var(--text); }
+      .header {
+        padding: 0 0 18px;
+        margin-bottom: 26px;
+        border-bottom: 1px solid var(--line);
+      }
+      h1 {
+        color: var(--text);
+        font-size: 1.7rem;
+        letter-spacing: 0;
+        line-height: 1.25;
+      }
+      h2 { color: var(--text); font-size: 1.1rem; }
+      .page-subtitle, .section-heading p { color: var(--muted); }
+      .status-badge {
+        padding: 6px 10px;
+        border: 1px solid #cfe3d7;
+        border-radius: 6px;
+        background: #eef6f1;
+        color: var(--primary-strong);
+        font-size: .8rem;
+      }
+      .logout-link { color: #4e5b54; font-size: .86rem; }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: var(--shadow);
+        backdrop-filter: none;
+      }
+      .section-heading h2 { font-size: 1.1rem; }
+      .tabs { gap: 4px; }
+      .tab-btn {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fff;
+        color: #526058;
+        box-shadow: none;
+      }
+      .tab-btn.active {
+        border-color: #b9d2c3;
+        background: #edf4f0;
+        color: var(--primary-strong);
+        box-shadow: none;
+      }
+      .dropzone { border: 1px solid var(--line); background: #fff; }
+      button {
+        border: 1px solid var(--primary-strong);
+        border-radius: 6px;
+        background: var(--primary);
+        box-shadow: none;
+        font-weight: 600;
+      }
+      button:hover { background: var(--primary-strong); }
+      .preview {
+        border-color: var(--line);
+        border-radius: 8px;
+        background: #f7f9f8;
+      }
+      .preview:not(.has-image) img, .result-image:not(.has-image) img { display: none; }
+      .preview:not(.has-image)::after, .result-image:not(.has-image)::after {
+        color: var(--muted);
+        font-size: .86rem;
+      }
+      .preview:not(.has-image)::after { content: "Panel preview appears here"; }
+      .result-image:not(.has-image) {
+        display: grid;
+        min-height: 180px;
+        padding: 18px;
+        place-items: center;
+        text-align: center;
+      }
+      .result-image.has-image { display: block; }
+      .result-image:not(.has-image)::after { content: "Heatmap appears after inspection"; }
+      .mini-metric {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #f7f9f8;
+      }
+      .result-image { border-color: var(--line); background: #f7f9f8; }
+      #historyChart { border: 1px solid var(--line); border-radius: 6px; }
+      .history-table-wrap { border-color: var(--line); }
+      .history-condition.clean { background: #edf5f0; color: var(--primary-strong); }
+      .detection-status { min-height: 1.4em; margin: 12px 0 0; color: var(--muted); font-size: .88rem; }
+      .detection-status.error { color: #b42318; }
+      .detection-status.loading::before { display: inline-block; width: 12px; height: 12px; margin-right: 8px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; content: ""; animation: detection-spin .7s linear infinite; vertical-align: -2px; }
+      @keyframes detection-spin { to { transform: rotate(360deg); } }
+      .detection-results { margin: 0 0 24px; }
+      .detection-results[hidden] { display: none; }
+      .detection-results-heading { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 14px; }
+      .detection-results-heading h2 { margin: 0; }
+      .detection-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+      .detection-comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+      .detection-media { min-width: 0; margin: 0; overflow: hidden; border: 1px solid rgba(161, 180, 214, 0.25); border-radius: 12px; background: rgba(9, 17, 31, 0.78); box-shadow: 0 12px 26px rgba(3, 8, 22, 0.16); }
+      .detection-media figcaption { padding: 10px 12px; color: #f2f7ff; font-size: .8rem; font-weight: 700; background: linear-gradient(180deg, rgba(15, 34, 63, 0.98), rgba(10, 15, 28, 0.9)); border-bottom: 1px solid rgba(150, 172, 219, 0.18); }
+      .detection-media img, .detection-media video { display: block; width: 100%; max-height: 380px; object-fit: contain; background: #071326; }
+      .detection-media[hidden] { display: none; }
+      .video-status-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+      .video-retry-btn { margin-top: 12px; }
+      .validation-summary { margin: 0 0 12px; color: var(--muted); font-size: .84rem; }
+      .validation-summary.loading::before { display: inline-block; width: 12px; height: 12px; margin-right: 8px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; content: ""; animation: detection-spin .7s linear infinite; vertical-align: -2px; }
+      .validation-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 14px 0; }
+      .validation-visuals { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(250px, 1fr); gap: 18px; align-items: start; }
+      .validation-chart-wrap { min-width: 0; }
+      #validationChart { display: block; width: 100%; height: 260px; background: var(--surface-soft); border: 1px solid var(--line); border-radius: 8px; }
+      .validation-confusion-wrap { overflow-x: auto; }
+      .validation-confusion { width: 100%; border-collapse: collapse; font-size: .82rem; }
+      .validation-confusion th, .validation-confusion td { padding: 10px; border: 1px solid var(--line); text-align: center; }
+      .validation-confusion th { background: var(--surface-soft); color: var(--muted); }
+      .validation-confusion .confusion-count { display: block; color: var(--text); font-size: 1.1rem; font-weight: 800; }
+      .validation-confusion .confusion-kind { display: block; margin-top: 3px; color: var(--muted); font-size: .72rem; }
+      .validation-class-metrics { margin-top: 16px; }
+      .validation-note { margin: 10px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.5; }
+      @media (max-width: 760px) { .validation-visuals { grid-template-columns: 1fr; } }
+      .detection-recommendations { color: var(--muted); font-size: .88rem; line-height: 1.6; }
+      @media (max-width: 620px) {
+        .detection-results-heading { align-items: flex-start; flex-direction: column; }
+        .detection-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (max-width: 860px) {
+        .container { width: 100%; margin-left: 0; padding: 22px 24px 44px; }
+        .sidebar { display: none; }
+      }
+      @media (max-width: 560px) {
+        .container { padding: 18px 14px 40px; }
+        .card { padding: 16px; }
+        h1 { font-size: 1.45rem; }
+      }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='redesign.css') }}" />
   </head>
   <body>
     <button class="mobile-nav-toggle" id="mobileNavToggle" type="button" aria-label="Open navigation" aria-controls="primaryNavigation" aria-expanded="false">&#9776;</button>
     <aside class="sidebar" id="primaryNavigation" aria-label="Primary navigation">
-      <div class="sidebar-brand"><span class="brand-icon">&#9728;</span><span><strong>SolarSense AI</strong><small>Solar Panel Intelligence</small></span></div>
-      <nav>
-        <a href="#top" class="sidebar-link active">Overview</a>
-        <a href="#detection" class="sidebar-link">Detection</a>
-        <a href="#maintenance" class="sidebar-link">Maintenance</a>
-        <a href="#history" class="sidebar-link">History</a>
+      <div class="sidebar-brand"><span class="brand-icon">&#9728;</span><span><strong>SolarSense</strong><small>Panel monitoring</small></span></div>
+      <nav aria-label="Dashboard sections">
+        <a href="#detection" class="sidebar-link active" aria-current="location">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M4 5.5h16v13H4zM8 5.5v-2h8v2M8 9h8M8 12h8M8 15h5"></path>
+          </svg>
+          <span>Detection</span>
+        </a>
+        <a href="#maintenance-section" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M14.5 6.5a5 5 0 0 0-6.6 6.6L3.5 17.5a2.1 2.1 0 0 0 3 3l4.4-4.4a5 5 0 0 0 6.6-6.6l-3 3-3-3 3-3Z"></path>
+          </svg>
+          <span>Maintenance</span>
+        </a>
+        <a href="#history" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M3.5 12a8.5 8.5 0 1 0 2.3-5.8L3.5 8.5M3.5 4.5v4h4M12 7v5l3.5 2"></path>
+          </svg>
+          <span>History</span>
+        </a>
       </nav>
-      <div class="sidebar-note"><strong>AI Solar Inspection</strong><br />AI-powered analysis for images and videos to detect dust, assess panel condition, and support maintenance decisions.</div>
+      <div class="sidebar-note"><strong>Inspection workspace</strong><br />Review panel condition and maintenance insights.</div>
     </aside>
     <div class="container" id="top">
       <div class="header">
-        <div><h1>SolarSense AI Dashboard</h1><p class="page-subtitle">AI-powered solar panel inspection and maintenance platform</p></div>
+        <div><h1>Solar panel detection</h1><p class="page-subtitle">Upload a panel image or video for AI-powered dust analysis.</p></div>
         <div class="header-actions">
           <div class="status-badge" id="systemStatus">System ready</div>
           <a class="logout-link" href="/logout">Log out</a>
         </div>
       </div>
 
-      <section class="hero">
-        <div class="hero-content">
-          <span class="hero-tag">AI-powered inspection</span>
-          <h2>Solar panel condition analysis for dust, degradation, and maintenance planning</h2>
-          <p>SolarSense AI analyzes both images and videos to detect dust accumulation, evaluate panel condition, and provide actionable maintenance insights for cleaner, more efficient solar operations.</p>
-        </div>
+      <section class="summary-grid" aria-label="Inspection summary">
+        <article class="card summary-card"><span class="summary-icon" aria-hidden="true">▣</span><div><span class="label">Inspections</span><strong id="summaryInspections">--</strong></div></article>
+        <article class="card summary-card"><span class="summary-icon clean" aria-hidden="true">✓</span><div><span class="label">Clean panels</span><strong id="summaryClean">--</strong></div></article>
+        <article class="card summary-card"><span class="summary-icon dusty" aria-hidden="true">!</span><div><span class="label">Dusty panels</span><strong id="summaryDusty">--</strong></div></article>
       </section>
-
-      <div class="grid">
-        <div class="card kpi">
-          <div class="label">Confidence</div>
-          <div class="value" id="confidenceValue">--</div>
-        </div>
-        <div class="card kpi">
-          <div class="label">Dust Coverage</div>
-          <div class="value" id="coverageValue">--</div>
-        </div>
-        <div class="card kpi">
-          <div class="label">Next Cleaning</div>
-          <div class="value" id="nextCleaningValue">--</div>
-        </div>
-      </div>
 
       <section id="detection">
-      <div class="section-heading"><h2>Panel Detection</h2><p>Upload an image or video for AI-based inspection.</p></div>
-      <div class="tabs">
-        <button class="tab-btn active" data-target="image-panel">Image</button>
-        <button class="tab-btn" data-target="video-panel">Video</button>
+      <div class="section-heading"><h2>Analyze a solar panel</h2><p>Compare the original media with AI-highlighted dust regions and review the maintenance guidance.</p></div>
+      <div class="tabs" role="tablist" aria-label="Choose media type">
+        <button class="tab-btn active" type="button" role="tab" aria-controls="image-panel" data-target="image-panel" aria-selected="true">Image</button>
+        <button class="tab-btn" type="button" role="tab" aria-controls="video-panel" data-target="video-panel" aria-selected="false">Video</button>
       </div>
 
-      <div class="panel" id="image-panel">
-        <div class="card dropzone">
-          <h2>Analyze panel image</h2>
-          <input id="imageInput" type="file" accept="image/*" />
+      <div class="panel" id="image-panel" role="tabpanel">
+        <div class="card dropzone upload-card" id="imageDropzone">
+          <div class="upload-heading"><span class="upload-icon" aria-hidden="true">↑</span><div><h2>Upload a panel image</h2><p>PNG, JPG, JPEG or WebP · up to 512 MB</p></div></div>
+          <label class="file-drop" for="imageInput" tabindex="0" role="button" aria-describedby="imageStatus imageFileName">
+            <strong>Drop an image here</strong><span>or <span class="browse-link">browse files</span></span>
+          </label>
+          <input class="file-input" id="imageInput" type="file" accept=".png,.jpg,.jpeg,.webp,image/jpeg" aria-hidden="true" tabindex="-1" />
+          <p class="selected-file" id="imageFileName">No image selected</p>
           <div class="button-row">
-            <button id="analyzeBtn">Analyze Image</button>
+            <button id="analyzeBtn" type="button"><span class="button-spinner" aria-hidden="true"></span>Analyze image</button>
           </div>
+          <p class="detection-status" id="imageStatus" role="status" aria-live="polite"></p>
         </div>
-        <div class="card preview">
-          <img id="previewImage" alt="Panel preview" src="" />
+        <div class="card preview upload-preview" id="imagePreviewCard">
+          <div class="preview-empty"><span class="preview-glyph" aria-hidden="true">▧</span><strong>Image preview</strong><span>Your selected panel image will appear here.</span></div>
+          <img id="previewImage" alt="Preview of selected solar panel" src="" />
         </div>
       </div>
 
-      <div class="panel" id="video-panel" style="display:none;">
-        <div class="card dropzone">
-          <h2>Analyze panel video</h2>
-          <input id="videoInput" type="file" accept="video/*" />
-          <div class="button-row">
-            <button id="videoBtn">Upload Video</button>
+      <div class="panel" id="video-panel" role="tabpanel" hidden>
+        <div class="card dropzone upload-card" id="videoDropzone">
+          <div class="upload-heading"><span class="upload-icon" aria-hidden="true">↑</span><div><h2>Upload a panel video</h2><p>MP4 video · up to 512 MB</p></div></div>
+          <label class="file-drop" for="videoInput" tabindex="0" role="button" aria-describedby="videoStatus videoFileName">
+            <strong>Drop a video here</strong><span>or <span class="browse-link">browse files</span></span>
+          </label>
+          <input class="file-input" id="videoInput" type="file" accept=".mp4,video/mp4" aria-hidden="true" tabindex="-1" />
+          <p class="selected-file" id="videoFileName">No video selected</p>
+          <div class="button-row video-status-row">
+            <button id="videoBtn" type="button"><span class="button-spinner" aria-hidden="true"></span>Analyze video</button>
+            <button id="videoRetryBtn" class="secondary video-retry-btn" type="button" hidden>Retry</button>
           </div>
-          <div id="videoStatus" style="margin-top: 12px; color: var(--muted);"></div>
+          <div id="videoStatus" class="detection-status" role="status" aria-live="polite"></div>
         </div>
-        <div class="card preview">
-          <video id="videoPreview" controls style="width:100%; max-height: 360px; display:none;"></video>
+        <div class="card preview upload-preview" id="videoPreviewCard">
+          <div class="preview-empty"><span class="preview-glyph" aria-hidden="true">▷</span><strong>Video preview</strong><span>Your selected panel video will appear here.</span></div>
+          <video id="videoPreview" controls aria-label="Selected or processed video preview"></video>
         </div>
       </div>
       </section>
 
-      <div class="card" id="maintenance" style="margin-bottom: 24px;">
-        <h2>Dust map & maintenance</h2>
-        <div class="results-grid">
-          <div class="result-image"><img id="overlayImage" alt="Overlay heatmap" src="" /></div>
-          <div class="result-image"><img id="heatmapImage" alt="Dust heatmap" src="" /></div>
+      <section class="card detection-results" id="detectionResults" aria-labelledby="resultsTitle" hidden>
+        <div class="detection-results-heading">
+          <div><h2 id="resultsTitle">Detection results</h2><p class="page-subtitle" id="coverageSource"></p></div>
+          <button type="button" id="downloadReportBtn" class="secondary">Download report</button>
         </div>
-        <div style="margin-top:16px; display:grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
-          <div class="mini-metric"><div class="label">Dust level</div><div class="value" id="dustLevelValue">--</div></div>
-          <div class="mini-metric"><div class="label">Measured efficiency loss</div><div class="value" id="efficiencyValue">Not measured</div></div>
-          <div class="mini-metric"><div class="label">Action</div><div class="value" id="actionValue">--</div></div>
-          <div class="mini-metric"><div class="label">Coverage method</div><div class="value" id="coverageSourceValue">--</div></div>
+        <div class="detection-metrics">
+          <div class="mini-metric"><div class="label">Prediction</div><div class="value" id="predictionLabel">--</div></div>
+          <div class="mini-metric"><div class="label">Dust coverage</div><div class="value" id="dustCoverageValue">--</div></div>
+          <div class="mini-metric"><div class="label">Dust classification</div><div class="value" id="maintenanceDustLevelValue">--</div></div>
+          <div class="mini-metric"><div class="label">Model confidence</div><div class="value" id="maintenanceConfidenceValue">--</div></div>
         </div>
-        <div style="margin-top:16px;">
-          <ul id="recommendationsList"></ul>
+        <div class="detection-comparison" aria-label="Original and processed media comparison">
+          <figure class="detection-media" id="originalImagePanel" hidden><figcaption>Original image</figcaption><img id="originalResultImage" alt="Uploaded solar panel" /></figure>
+          <figure class="detection-media" id="overlayImagePanel" hidden><figcaption>AI dust overlay</figcaption><img id="overlayImage" alt="Solar panel with AI-highlighted dust regions" /></figure>
+          <figure class="detection-media" id="heatmapImagePanel" hidden><figcaption>Dust heatmap</figcaption><img id="heatmapImage" alt="AI dust activation heatmap" /></figure>
+          <figure class="detection-media" id="originalVideoPanel" hidden><figcaption>Original video</figcaption><video id="originalResultVideo" controls aria-label="Original uploaded video"></video></figure>
+          <figure class="detection-media" id="processedVideoPanel" hidden><figcaption>AI-processed video</figcaption><video id="processedResultVideo" controls aria-label="AI-processed video"></video></figure>
         </div>
-      </div>
+        <div class="detection-metrics" style="margin-top: 12px;">
+          <div class="mini-metric"><div class="label">Next cleaning</div><div class="value" id="maintenanceNextCleaningValue">--</div></div>
+          <div class="mini-metric"><div class="label">Efficiency loss</div><div class="value" id="maintenanceEfficiencyLossValue">--</div><div class="page-subtitle" id="efficiencyLossSource"></div></div>
+        </div>
+        <h3>Maintenance recommendations</h3>
+        <ul id="recommendationsList" class="detection-recommendations"></ul>
+      </section>
+
+      <section class="card maintenance-card" id="maintenance-section" aria-labelledby="maintenanceTitle">
+        <div class="section-heading history-heading">
+          <div><h2 id="maintenanceTitle">Maintenance insights</h2><p class="page-subtitle">A concise view of recorded panel condition, without repeating schedule entries.</p></div>
+          <span class="record-count" id="maintenanceSummary">Loading inspection insights…</span>
+        </div>
+        <div class="maintenance-insights-grid" aria-live="polite">
+          <article class="maintenance-insight latest-insight">
+            <span class="insight-label">Latest inspection</span>
+            <span class="history-condition" id="maintenanceLatestCondition">--</span>
+            <p id="maintenanceLatestAction">Loading the latest recorded recommendation…</p>
+            <time id="maintenanceLatestDate"></time>
+          </article>
+          <article class="maintenance-insight">
+            <span class="insight-label">Dusty inspections</span>
+            <strong class="insight-value" id="maintenanceDustyCount">--</strong>
+            <span class="insight-detail">of <span id="maintenanceInspectionCount">--</span> recorded inspections</span>
+          </article>
+          <article class="maintenance-insight">
+            <span class="insight-label">Average dust coverage</span>
+            <strong class="insight-value" id="maintenanceAverageCoverage">--</strong>
+            <span class="insight-detail">across inspections with coverage data</span>
+          </article>
+        </div>
+      </section>
 
       <div class="card" id="history" style="margin-bottom: 24px;">
-        <div class="section-heading history-heading"><h2>Inspection history</h2><p id="historySummary">Loading inspection history...</p></div>
+        <div class="section-heading history-heading">
+          <div><h2>Inspection history</h2><p id="historySummary">Loading inspection history...</p></div>
+          <label class="history-filter">Condition
+            <select id="historyConditionFilter" aria-label="Filter inspection history by condition">
+              <option value="all">All conditions</option><option value="Clean">Clean</option><option value="Dusty">Dusty</option>
+            </select>
+          </label>
+        </div>
         <div class="history-visuals">
           <div>
-            <h3 class="chart-title">Dust and confidence trend</h3>
-            <canvas id="historyChart" width="900" height="260" aria-label="Dust coverage and model confidence by inspection date" role="img"></canvas>
+            <h3 class="chart-title">Inspection confidence history</h3>
+            <canvas id="historyChart" width="900" height="260" aria-label="Model confidence by inspection date" role="img"></canvas>
           </div>
           <div class="condition-chart-panel">
             <h3 class="chart-title">Condition distribution</h3>
@@ -352,12 +605,12 @@
             <div class="condition-summary" id="conditionSummary">Loading...</div>
           </div>
         </div>
-        <div class="history-legend" aria-label="Chart legend"><span><i class="legend-dot dust"></i>Dust coverage</span><span><i class="legend-dot confidence"></i>Model confidence</span></div>
+        <div class="history-legend" aria-label="Chart legend"><span><i class="legend-dot confidence"></i>Model confidence</span></div>
         <div class="history-table-wrap">
           <table class="history-table">
             <caption class="sr-only">Recent solar panel inspections</caption>
-            <thead><tr><th scope="col">Date</th><th scope="col">Condition</th><th scope="col">Confidence</th><th scope="col">Dust coverage</th><th scope="col">Next cleaning</th></tr></thead>
-            <tbody id="historyRows"><tr><td colspan="5">Loading inspection history...</td></tr></tbody>
+            <thead><tr><th scope="col">Date</th><th scope="col">Condition</th><th scope="col">Confidence</th><th scope="col">Dust coverage</th><th scope="col">Efficiency loss</th><th scope="col">Next cleaning</th></tr></thead>
+            <tbody id="historyRows"><tr><td colspan="6">Loading inspection history...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -365,18 +618,42 @@
 
     <script>
       const apiBase = '';
-      const previewImage = document.getElementById('previewImage');
-      const overlayImage = document.getElementById('overlayImage');
-      const heatmapImage = document.getElementById('heatmapImage');
+      const reportButton = document.getElementById('downloadReportBtn');
+      let latestReport = null;
+      let imagePreviewUrl = null;
+      let videoPreviewUrl = null;
+      const maxUploadBytes = 512 * 1024 * 1024;
 
       function setText(id, value) {
         const node = document.getElementById(id);
         if (node) node.textContent = value;
       }
 
-      function setImage(id, value) {
+      function setPanelVisible(id, visible) {
+        document.getElementById(id).hidden = !visible;
+      }
+
+      function setStatus(id, message, state = '') {
         const node = document.getElementById(id);
-        if (node) node.src = value || '';
+        node.textContent = message;
+        node.classList.toggle('error', state === 'error');
+        node.classList.toggle('loading', state === 'loading');
+      }
+
+      function setSelectedFile(id, file) {
+        const node = document.getElementById(id);
+        node.textContent = file ? file.name : 'No file selected';
+        node.title = file ? file.name : '';
+      }
+
+      function validateFile(file, extensions) {
+        const extension = file.name.split('.').pop().toLowerCase();
+        if (!extensions.has(extension)) {
+          throw new Error(`Unsupported file type. Choose one of: ${Array.from(extensions).join(', ')}.`);
+        }
+        if (file.size > maxUploadBytes) {
+          throw new Error('The file is too large. Maximum size is 512 MB.');
+        }
       }
 
       async function readJsonResponse(response) {
@@ -390,20 +667,139 @@
         return response.json();
       }
 
-      function renderMetrics(payload) {
-        setText('confidenceValue', payload.confidence ? `${payload.confidence.toFixed(1)}%` : '--');
-        setText('coverageValue', payload.dust_coverage ? `${payload.dust_coverage.toFixed(1)}%` : '--');
-        setText('coverageSourceValue', payload.coverage_source || 'Estimate');
-        setText('nextCleaningValue', payload.next_cleaning || '--');
-        setText('dustLevelValue', payload.dust_level || '--');
-        setText('efficiencyValue', payload.efficiency_loss == null ? 'Not measured' : `${payload.efficiency_loss.toFixed(1)}%`);
-        setText('actionValue', payload.action || '--');
-        setImage('overlayImage', payload.overlay_img ? `${apiBase}${payload.overlay_img}` : '');
-        setImage('heatmapImage', payload.heatmap_img ? `${apiBase}${payload.heatmap_img}` : '');
-        setImage('previewImage', payload.original_img ? `${apiBase}${payload.original_img}` : '');
+      const imageInput = document.getElementById('imageInput');
+      const videoInput = document.getElementById('videoInput');
+      const imagePreview = document.getElementById('previewImage');
+      const imagePreviewCard = document.getElementById('imagePreviewCard');
+      const videoPreview = document.getElementById('videoPreview');
+      const videoPreviewCard = document.getElementById('videoPreviewCard');
+
+      function selectImage(file) {
+        if (imagePreviewUrl) URL.revokeObjectURL(imagePreviewUrl);
+        imagePreviewUrl = null;
+        imagePreview.removeAttribute('src');
+        imagePreviewCard.classList.remove('has-image');
+        setSelectedFile('imageFileName', null);
+        if (!file) return;
+        try {
+          validateFile(file, new Set(['png', 'jpg', 'jpeg', 'webp']));
+          imagePreviewUrl = URL.createObjectURL(file);
+          imagePreview.src = imagePreviewUrl;
+          imagePreviewCard.classList.add('has-image');
+          setSelectedFile('imageFileName', file);
+          setStatus('imageStatus', '');
+        } catch (error) {
+          imageInput.value = '';
+          setStatus('imageStatus', `File error: ${error.message}`, 'error');
+        }
+      }
+
+      imageInput.addEventListener('change', () => {
+        selectImage(imageInput.files && imageInput.files[0]);
+      });
+
+      function selectVideo(file) {
+        if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
+        videoPreviewUrl = null;
+        videoPreview.removeAttribute('src');
+        videoPreviewCard.classList.remove('has-video');
+        setSelectedFile('videoFileName', null);
+        if (!file) {
+          lastSelectedVideo = null;
+          return;
+        }
+        try {
+          validateFile(file, new Set(['mp4']));
+          lastSelectedVideo = file;
+          videoPreviewUrl = URL.createObjectURL(file);
+          videoPreview.src = videoPreviewUrl;
+          videoPreviewCard.classList.add('has-video');
+          setSelectedFile('videoFileName', file);
+          setStatus('videoStatus', '');
+        } catch (error) {
+          videoInput.value = '';
+          lastSelectedVideo = null;
+          setStatus('videoStatus', `File error: ${error.message}`, 'error');
+        }
+      }
+
+      videoInput.addEventListener('change', () => {
+        selectVideo(videoInput.files && videoInput.files[0]);
+      });
+
+      for (const [input, dropzone, acceptFile] of [
+        [imageInput, document.getElementById('imageDropzone'), selectImage],
+        [videoInput, document.getElementById('videoDropzone'), selectVideo],
+      ]) {
+        const dropTarget = dropzone.querySelector('.file-drop');
+        for (const eventName of ['dragenter', 'dragover']) {
+          dropTarget.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropTarget.classList.add('drag-over');
+          });
+        }
+        for (const eventName of ['dragleave', 'drop']) {
+          dropTarget.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropTarget.classList.remove('drag-over');
+          });
+        }
+        dropTarget.addEventListener('drop', (event) => {
+          const file = event.dataTransfer && event.dataTransfer.files[0];
+          if (!file) return;
+          const transfer = new DataTransfer();
+          transfer.items.add(file);
+          input.files = transfer.files;
+          acceptFile(file);
+        });
+        dropTarget.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            input.click();
+          }
+        });
+      }
+
+      function renderMetrics(payload, mediaType, filename) {
+        const confidence = Number(payload.confidence ?? payload.avg_confidence);
+        const coverage = Number(payload.dust_coverage ?? payload.avg_coverage);
+        const label = payload.label || payload.overall_label || '--';
+        setText('predictionLabel', label);
+        document.getElementById('predictionLabel').dataset.condition = label;
+        setText('maintenanceConfidenceValue', Number.isFinite(confidence) ? `${confidence.toFixed(1)}%` : '--');
+        setText('dustCoverageValue', Number.isFinite(coverage) ? `${coverage.toFixed(1)}%` : '--');
+        setText('maintenanceNextCleaningValue', payload.next_cleaning || '--');
+        setText('maintenanceDustLevelValue', payload.dust_level || '--');
+        setText('maintenanceEfficiencyLossValue', payload.efficiency_loss == null ? 'Not available' : `${Number(payload.efficiency_loss).toFixed(1)}%`);
+        setText('efficiencyLossSource', payload.efficiency_loss_source || '');
+        setText('coverageSource', payload.coverage_source ? `Coverage method: ${payload.coverage_source}` : '');
+
+        const isVideo = mediaType === 'video';
+        setPanelVisible('originalImagePanel', !isVideo && Boolean(payload.original_img));
+        setPanelVisible('overlayImagePanel', !isVideo && Boolean(payload.overlay_img));
+        setPanelVisible('heatmapImagePanel', !isVideo && Boolean(payload.heatmap_img));
+        setPanelVisible('originalVideoPanel', isVideo && Boolean(payload.original_video_url));
+        setPanelVisible('processedVideoPanel', isVideo && Boolean(payload.video_url));
+        if (!isVideo) {
+          document.getElementById('originalResultImage').src = `${apiBase}${payload.original_img}`;
+          document.getElementById('overlayImage').src = `${apiBase}${payload.overlay_img}`;
+          document.getElementById('heatmapImage').src = `${apiBase}${payload.heatmap_img}`;
+          document.getElementById('originalResultVideo').removeAttribute('src');
+          document.getElementById('processedResultVideo').removeAttribute('src');
+        } else {
+          const originalVideo = document.getElementById('originalResultVideo');
+          const processedVideo = document.getElementById('processedResultVideo');
+          originalVideo.src = `${apiBase}${payload.original_video_url}`;
+          processedVideo.src = `${apiBase}${payload.video_url}`;
+          originalVideo.load();
+          processedVideo.load();
+          document.getElementById('originalResultImage').removeAttribute('src');
+          document.getElementById('overlayImage').removeAttribute('src');
+          document.getElementById('heatmapImage').removeAttribute('src');
+        }
 
         const list = document.getElementById('recommendationsList');
-        list.innerHTML = '';
+        list.replaceChildren();
         if (Array.isArray(payload.recommendations)) {
           payload.recommendations.forEach((item) => {
             const li = document.createElement('li');
@@ -411,77 +807,176 @@
             list.appendChild(li);
           });
         }
+        latestReport = { payload, mediaType, filename };
+        reportButton.hidden = false;
+        document.getElementById('detectionResults').hidden = false;
       }
 
-      document.getElementById('analyzeBtn').addEventListener('click', async () => {
-        const input = document.getElementById('imageInput');
-        if (!input.files || !input.files[0]) {
-          alert('Please choose an image first.');
-          return;
-        }
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (character) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+        })[character]);
+      }
 
-        const formData = new FormData();
-        formData.append('file', input.files[0]);
-        const response = await fetch(`${apiBase}/predict`, { method: 'POST', body: formData });
-        const data = await response.json();
-        if (!response.ok) {
-          alert(data.error || 'Prediction failed.');
-          return;
+      async function imageDataUrl(url) {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Could not include an analyzed image in the report.');
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error('Could not prepare an image for the report.'));
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      async function downloadReport() {
+        if (!latestReport) return;
+        const { payload, mediaType, filename } = latestReport;
+        const reportButtonOriginalText = reportButton.textContent;
+        reportButton.disabled = true;
+        reportButton.textContent = 'Preparing report...';
+        try {
+          const recommendations = Array.isArray(payload.recommendations)
+            ? payload.recommendations.map((item) => `<li>${escapeHtml(item)}</li>`).join('')
+            : '<li>No recommendations were provided.</li>';
+          let mediaMarkup;
+          if (mediaType === 'image') {
+            const imageItems = [
+              ['Original image', payload.original_img, 'Uploaded panel'],
+              ['AI dust overlay', payload.overlay_img, 'AI-highlighted dust regions'],
+              ['Dust heatmap', payload.heatmap_img, 'Dust activation heatmap'],
+            ].filter(([, url]) => Boolean(url));
+            const images = await Promise.all(imageItems.map(([, url]) => imageDataUrl(`${apiBase}${url}`)));
+            mediaMarkup = `<div class="media">${imageItems.map(([title, , alt], index) => `<figure><figcaption>${escapeHtml(title)}</figcaption><img src="${images[index]}" alt="${escapeHtml(alt)}"></figure>`).join('')}</div>`;
+          } else {
+            const originalUrl = new URL(`${apiBase}${payload.original_video_url}`, window.location.href).href;
+            const processedUrl = new URL(`${apiBase}${payload.video_url}`, window.location.href).href;
+            mediaMarkup = `<div class="media"><figure><figcaption>Original video: ${escapeHtml(filename)}</figcaption><video controls src="${escapeHtml(originalUrl)}"></video><p><a href="${escapeHtml(originalUrl)}" download>Download original video</a></p></figure><figure><figcaption>AI-processed video</figcaption><video controls src="${escapeHtml(processedUrl)}"></video><p><a href="${escapeHtml(processedUrl)}" download>Download processed video</a></p></figure></div>`;
+          }
+          const confidence = Number(payload.confidence ?? payload.avg_confidence);
+          const coverage = Number(payload.dust_coverage ?? payload.avg_coverage);
+          const label = payload.label || payload.overall_label || '--';
+          const report = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SolarSense Detection Report</title>
+  <style>
+    body { max-width: 1100px; margin: 36px auto; padding: 0 20px; color: #172033; font: 16px/1.5 Arial, sans-serif; }
+    h1 { color: #102f4a; }
+    .meta { color: #64748b; }
+    .metrics, .media { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .metric, figure { margin: 0; padding: 14px; border: 1px solid #dbe3eb; border-radius: 8px; }
+    .metric strong, figcaption { display: block; margin-bottom: 6px; color: #64748b; font-size: .85rem; }
+    img, video { width: 100%; max-height: 520px; object-fit: contain; background: #f4f7fa; }
+    li { margin: 6px 0; }
+    @media print { body { margin: 0 auto; } .media { break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <h1>SolarSense Detection Report</h1>
+  <p class="meta">Generated ${escapeHtml(new Date().toLocaleString())} · ${escapeHtml(filename)}</p>
+  <section class="metrics">
+    <div class="metric"><strong>Prediction</strong>${escapeHtml(label)}</div>
+    <div class="metric"><strong>Dust coverage</strong>${Number.isFinite(coverage) ? `${coverage.toFixed(1)}%` : 'Not available'}</div>
+    <div class="metric"><strong>Dust classification</strong>${escapeHtml(payload.dust_level || '--')}</div>
+    <div class="metric"><strong>Model confidence</strong>${Number.isFinite(confidence) ? `${confidence.toFixed(1)}%` : 'Not available'}</div>
+    <div class="metric"><strong>Next cleaning</strong>${escapeHtml(payload.next_cleaning || '--')}</div>
+    <div class="metric"><strong>Efficiency loss</strong>${payload.efficiency_loss == null ? 'Not available' : `${Number(payload.efficiency_loss).toFixed(1)}%`}<br>${escapeHtml(payload.efficiency_loss_source || '')}</div>
+    <div class="metric"><strong>Coverage method</strong>${escapeHtml(payload.coverage_source || 'Not available')}</div>
+  </section>
+  <h2>Media comparison</h2>
+  ${mediaMarkup}
+  <h2>Maintenance recommendations</h2>
+  <ul>${recommendations}</ul>
+</body>
+</html>`;
+          const blob = new Blob([report], { type: 'text/html;charset=utf-8' });
+          const downloadUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          const safeName = filename.replace(/\.[^.]+$/, '').replace(/[^a-z0-9_-]+/gi, '-').replace(/^-+|-+$/g, '') || 'inspection';
+          link.href = downloadUrl;
+          link.download = `SolarSense-${safeName}-report.html`;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+        } catch (error) {
+          setStatus(mediaType === 'video' ? 'videoStatus' : 'imageStatus', `Report error: ${error.message}`, 'error');
+        } finally {
+          reportButton.disabled = false;
+          reportButton.textContent = reportButtonOriginalText;
         }
-        renderMetrics(data);
-        loadHistory();
+      }
+
+      reportButton.addEventListener('click', downloadReport);
+
+      document.getElementById('analyzeBtn').addEventListener('click', async () => {
+        const file = imageInput.files && imageInput.files[0];
+        const button = document.getElementById('analyzeBtn');
+        try {
+          if (!file) throw new Error('Choose an image file to begin analysis.');
+          validateFile(file, new Set(['png', 'jpg', 'jpeg', 'webp']));
+          latestReport = null;
+          reportButton.hidden = true;
+          document.getElementById('detectionResults').hidden = true;
+          button.disabled = true;
+          setStatus('imageStatus', 'Analyzing image...', 'loading');
+          const formData = new FormData();
+          formData.append('file', file);
+          const response = await fetch(`${apiBase}/predict`, { method: 'POST', body: formData });
+          const data = await readJsonResponse(response);
+          if (!response.ok) throw new Error(data.error || 'Image analysis failed.');
+          renderMetrics(data, 'image', file.name);
+          setStatus('imageStatus', 'Image analysis complete.');
+          loadHistory();
+        } catch (error) {
+          setStatus('imageStatus', `Analysis error: ${error.message}`, 'error');
+        } finally {
+          button.disabled = false;
+        }
       });
 
       function renderHistoryChart(history) {
         const canvas = document.getElementById('historyChart');
         const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        ctx.clearRect(0, 0, width, height);
         if (!history.length) {
-          ctx.clearRect(0,0,canvas.width,canvas.height);
-          ctx.fillStyle = '#64748b';
+          ctx.fillStyle = '#68776e';
           ctx.font = '600 14px Inter, sans-serif';
           ctx.fillText('No history yet', 24, 40);
           return;
         }
-        const width = canvas.width;
-        const height = canvas.height;
-        ctx.clearRect(0,0,width,height);
-        ctx.strokeStyle = '#dbe3eb';
-        for (let i = 0; i <= 4; i++) {
-          const y = 20 + i * ((height - 40) / 4);
-          ctx.beginPath(); ctx.moveTo(40, y); ctx.lineTo(width - 20, y); ctx.stroke();
-        }
         const chartHeight = height - 60;
         const xFor = (index) => 40 + (index * (width - 60)) / Math.max(history.length - 1, 1);
         const yFor = (value) => height - 26 - (Math.max(0, Math.min(100, value)) / 100) * chartHeight;
-        const drawSeries = (field, color) => {
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 3;
+        ctx.strokeStyle = '#dce6df';
+        for (let i = 0; i <= 4; i++) {
+          const y = 20 + i * ((height - 40) / 4);
           ctx.beginPath();
-          history.forEach((item, index) => {
-            const x = xFor(index);
-            const y = yFor(Number(item[field] || 0));
-            if (index === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-          });
+          ctx.moveTo(40, y);
+          ctx.lineTo(width - 20, y);
           ctx.stroke();
-          history.forEach((item, index) => {
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.arc(xFor(index), yFor(Number(item[field] || 0)), 4, 0, Math.PI * 2);
-            ctx.fill();
-          });
-        };
-        drawSeries('dust_coverage', '#d97706');
-        drawSeries('confidence', '#102f4a');
-        ctx.fillStyle = '#64748b';
-        ctx.font = '600 12px Inter, sans-serif';
+        }
+        ctx.strokeStyle = '#287454';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
         history.forEach((item, index) => {
-          const date = item.timestamp ? new Date(item.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : `#${index + 1}`;
           const x = xFor(index);
-          ctx.save();
-          ctx.translate(x, height - 8);
-          ctx.rotate(-Math.PI / 8);
-          ctx.fillText(date, -18, 0);
-          ctx.restore();
+          const y = yFor(Number(item.confidence || 0));
+          if (index === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+        history.forEach((item, index) => {
+          ctx.fillStyle = '#287454';
+          ctx.beginPath();
+          ctx.arc(xFor(index), yFor(Number(item.confidence || 0)), 4, 0, Math.PI * 2);
+          ctx.fill();
         });
       }
 
@@ -495,146 +990,510 @@
         const radius = 78;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         if (!total) {
-          ctx.fillStyle = '#dbe3eb';
-          ctx.beginPath();
-          ctx.arc(center, center, radius, 0, Math.PI * 2);
-          ctx.fill();
-          setText('conditionSummary', 'No inspection data');
+          document.getElementById('conditionSummary').textContent = 'No inspections recorded';
           return;
         }
-        let start = -Math.PI / 2;
-        [[clean, '#16834b'], [dusty, '#d97706']].forEach(([value, color]) => {
-          const slice = value / total * Math.PI * 2;
-          ctx.fillStyle = color;
-          ctx.beginPath();
-          ctx.moveTo(center, center);
-          ctx.arc(center, center, radius, start, start + slice);
-          ctx.closePath();
-          ctx.fill();
-          start += slice;
-        });
-        ctx.fillStyle = '#ffffff';
+        const cleanAngle = (clean / total) * Math.PI * 2;
+        ctx.fillStyle = '#287454';
+        ctx.beginPath();
+        ctx.moveTo(center, center);
+        ctx.arc(center, center, radius, -Math.PI / 2, -Math.PI / 2 + cleanAngle);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#d97706';
+        ctx.beginPath();
+        ctx.moveTo(center, center);
+        ctx.arc(center, center, radius, -Math.PI / 2 + cleanAngle, Math.PI * 1.5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#fff';
         ctx.beginPath();
         ctx.arc(center, center, 48, 0, Math.PI * 2);
         ctx.fill();
-        const cleanPercent = Math.round(clean / total * 100);
-        const dustyPercent = Math.round(dusty / total * 100);
-        setText('conditionSummary', `Clean ${cleanPercent}% · Dusty ${dustyPercent}%`);
+        ctx.fillStyle = '#1c2a22';
+        ctx.font = '700 24px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(total), center, center);
+        document.getElementById('conditionSummary').textContent = `${clean} clean · ${dusty} dusty`;
       }
 
-      async function loadHistory() {
-        const response = await fetch(`${apiBase}/history`);
-        if (!response.ok) {
-          setText('historySummary', 'Unable to load inspection history.');
-          return;
-        }
-        const history = await response.json();
-        renderHistoryChart(history);
-        renderConditionChart(history);
+      function renderHistoryRows(history) {
         const rows = document.getElementById('historyRows');
-        rows.innerHTML = '';
-        setText('historySummary', history.length ? `${history.length} inspection${history.length === 1 ? '' : 's'} recorded` : 'No inspections recorded yet');
-        if (!history.length) {
-          rows.innerHTML = '<tr><td colspan="5">No inspections recorded yet.</td></tr>';
+        const condition = document.getElementById('historyConditionFilter').value;
+        const filtered = history.filter((item) => condition === 'all' || item.label === condition);
+        rows.replaceChildren();
+        if (!filtered.length) {
+          const row = document.createElement('tr');
+          const cell = document.createElement('td');
+          cell.colSpan = 6;
+          cell.className = 'empty-state';
+          cell.textContent = history.length ? 'No inspections match this condition.' : 'No inspections recorded yet.';
+          row.appendChild(cell);
+          rows.appendChild(row);
           return;
         }
-        history.slice().reverse().slice(0, 8).forEach((item) => {
+        filtered.slice().reverse().slice(0, 20).forEach((item) => {
           const row = document.createElement('tr');
-          const timestamp = item.timestamp ? new Date(item.timestamp).toLocaleDateString() : '--';
-          row.innerHTML = `<td>${timestamp}</td><td><span class="history-condition ${item.label === 'Clean' ? 'clean' : 'dusty'}">${item.label || '--'}</span></td><td>${Number(item.confidence || 0).toFixed(1)}%</td><td>${Number(item.dust_coverage || 0).toFixed(1)}%</td><td>${item.next_cleaning || '--'}</td>`;
+          const values = [
+            item.timestamp ? new Date(item.timestamp).toLocaleDateString() : '--',
+            item.label || '--',
+            `${Number(item.confidence || 0).toFixed(1)}%`,
+            item.dust_coverage == null ? '--' : `${Number(item.dust_coverage).toFixed(1)}%`,
+            item.efficiency_loss == null ? '--' : `${Number(item.efficiency_loss).toFixed(1)}%`,
+            item.next_cleaning || '--',
+          ];
+          values.forEach((value, index) => {
+            const cell = document.createElement('td');
+            if (index === 1) {
+              const badge = document.createElement('span');
+              badge.className = `history-condition ${item.label === 'Clean' ? 'clean' : 'dusty'}`;
+              badge.textContent = String(value);
+              cell.appendChild(badge);
+            } else {
+              cell.textContent = String(value);
+            }
+            row.appendChild(cell);
+          });
           rows.appendChild(row);
         });
       }
 
-      document.querySelectorAll('.tab-btn').forEach((button) => {
-        button.addEventListener('click', () => {
-          document.querySelectorAll('.tab-btn').forEach((btn) => btn.classList.remove('active'));
-          button.classList.add('active');
-          document.getElementById('image-panel').style.display = button.dataset.target === 'image-panel' ? 'grid' : 'none';
-          document.getElementById('video-panel').style.display = button.dataset.target === 'video-panel' ? 'grid' : 'none';
-        });
-      });
+      function renderMaintenanceInsights(history) {
+        const datedHistory = history
+          .map((item, index) => ({ item, index, time: Date.parse(item.timestamp || '') }))
+          .filter((entry) => Number.isFinite(entry.time))
+          .sort((first, second) => first.time - second.time || first.index - second.index);
+        const latest = datedHistory.length
+          ? datedHistory[datedHistory.length - 1].item
+          : history[history.length - 1];
+        const dustyCount = history.filter((item) => item.label === 'Dusty').length;
+        const coverages = history
+          .filter((item) => item.dust_coverage != null && item.dust_coverage !== '')
+          .map((item) => Number(item.dust_coverage))
+          .filter((coverage) => Number.isFinite(coverage));
+        const averageCoverage = coverages.length
+          ? coverages.reduce((total, coverage) => total + coverage, 0) / coverages.length
+          : null;
 
-      document.getElementById('videoBtn').addEventListener('click', async () => {
-        const input = document.getElementById('videoInput');
-        const button = document.getElementById('videoBtn');
-        const statusBox = document.getElementById('videoStatus');
-        if (!input.files || !input.files[0]) {
-          statusBox.textContent = 'Choose a video file first.';
+        setText('maintenanceSummary', `Based on ${history.length} saved inspection${history.length === 1 ? '' : 's'}`);
+        setText('maintenanceDustyCount', String(dustyCount));
+        setText('maintenanceInspectionCount', String(history.length));
+        setText('maintenanceAverageCoverage', averageCoverage == null ? '--' : `${averageCoverage.toFixed(1)}%`);
+        const condition = document.getElementById('maintenanceLatestCondition');
+        const action = document.getElementById('maintenanceLatestAction');
+        const date = document.getElementById('maintenanceLatestDate');
+        condition.className = 'history-condition';
+        date.textContent = '';
+        date.removeAttribute('datetime');
+        if (!latest) {
+          condition.textContent = 'No inspections';
+          action.textContent = 'Run an image or video inspection to see maintenance insights here.';
           return;
         }
 
-        const formData = new FormData();
-        formData.append('video', input.files[0]);
-        formData.append('heatmap', 'true');
+        condition.textContent = latest.label || 'Unknown';
+        if (latest.label === 'Clean' || latest.label === 'Dusty') {
+          condition.classList.add(latest.label.toLowerCase());
+        }
+        action.textContent = latest.action || 'No recommendation was recorded for the latest inspection.';
+        if (latest.timestamp) {
+          const inspectionDate = new Date(latest.timestamp);
+          if (!Number.isNaN(inspectionDate.getTime())) {
+            date.dateTime = inspectionDate.toISOString();
+            date.textContent = `Recorded ${inspectionDate.toLocaleString()}`;
+          }
+        }
+      }
+
+      document.getElementById('historyConditionFilter').addEventListener('change', () => {
+        renderHistoryRows(inspectionHistory);
+      });
+
+      function renderValidationChart(metrics) {
+        const canvas = document.getElementById('validationChart');
+        const ctx = canvas.getContext('2d');
+        const values = [
+          ['Accuracy', Number(metrics.accuracy), '#287454'],
+          ['Precision', Number(metrics.precision), '#16834b'],
+          ['Recall', Number(metrics.recall), '#a86412'],
+          ['F1 score', Number(metrics.f1_score), '#426858'],
+        ];
+        const width = canvas.width;
+        const height = canvas.height;
+        const left = 42;
+        const right = 14;
+        const top = 20;
+        const bottom = 46;
+        const chartHeight = height - top - bottom;
+        ctx.clearRect(0, 0, width, height);
+        ctx.font = '12px Inter, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let tick = 0; tick <= 100; tick += 25) {
+          const y = top + chartHeight * (1 - tick / 100);
+          ctx.strokeStyle = '#dce6df';
+          ctx.beginPath();
+          ctx.moveTo(left, y);
+          ctx.lineTo(width - right, y);
+          ctx.stroke();
+          ctx.fillStyle = '#68776e';
+          ctx.fillText(String(tick), left - 8, y);
+        }
+        const slotWidth = (width - left - right) / values.length;
+        const barWidth = Math.min(76, slotWidth * 0.54);
+        values.forEach(([label, value, color], index) => {
+          const safeValue = Math.max(0, Math.min(100, value));
+          const barHeight = chartHeight * safeValue / 100;
+          const x = left + slotWidth * index + (slotWidth - barWidth) / 2;
+          const y = top + chartHeight - barHeight;
+          ctx.fillStyle = color;
+          ctx.fillRect(x, y, barWidth, barHeight);
+          ctx.fillStyle = '#1c2a22';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(`${safeValue.toFixed(1)}%`, x + barWidth / 2, y - 4);
+          ctx.fillStyle = '#68776e';
+          ctx.textBaseline = 'top';
+          ctx.fillText(label, x + barWidth / 2, height - bottom + 10);
+        });
+      }
+
+      function renderValidationConfusion(metrics) {
+        const table = document.getElementById('validationConfusion');
+        const names = metrics.class_names;
+        const matrix = metrics.confusion_matrix;
+        if (!Array.isArray(names) || !Array.isArray(matrix) ||
+            matrix.length !== names.length ||
+            matrix.some((row) => !Array.isArray(row) || row.length !== names.length)) {
+          throw new Error('The validation response contains an invalid confusion matrix.');
+        }
+        const positiveIndex = names.indexOf('Dusty');
+        const negativeIndex = names.indexOf('Clean');
+        if (positiveIndex < 0 || negativeIndex < 0) {
+          throw new Error('Binary confusion matrix requires Clean and Dusty classes.');
+        }
+        const indices = [positiveIndex, negativeIndex];
+        const thead = document.createElement('thead');
+        const header = document.createElement('tr');
+        const corner = document.createElement('th');
+        corner.scope = 'col';
+        corner.textContent = 'Actual \\ Predicted';
+        header.appendChild(corner);
+        indices.forEach((index) => {
+          const th = document.createElement('th');
+          th.scope = 'col';
+          th.textContent = names[index];
+          header.appendChild(th);
+        });
+        thead.appendChild(header);
+        const tbody = document.createElement('tbody');
+        const outcomeLabels = [
+          ['TP', 'True positive'], ['FN', 'False negative'],
+          ['FP', 'False positive'], ['TN', 'True negative'],
+        ];
+        indices.forEach((actualIndex) => {
+          const row = document.createElement('tr');
+          const rowHeader = document.createElement('th');
+          rowHeader.scope = 'row';
+          rowHeader.textContent = names[actualIndex];
+          row.appendChild(rowHeader);
+          indices.forEach((predictedIndex) => {
+            const outcomeIndex = actualIndex === positiveIndex
+              ? (predictedIndex === positiveIndex ? 0 : 1)
+              : (predictedIndex === positiveIndex ? 2 : 3);
+            const cell = document.createElement('td');
+            const count = document.createElement('span');
+            count.className = 'confusion-count';
+            count.textContent = Number(matrix[actualIndex][predictedIndex]).toLocaleString();
+            const kind = document.createElement('span');
+            kind.className = 'confusion-kind';
+            kind.textContent = `${outcomeLabels[outcomeIndex][0]} · ${outcomeLabels[outcomeIndex][1]}`;
+            cell.append(count, kind);
+            row.appendChild(cell);
+          });
+          tbody.appendChild(row);
+        });
+        table.replaceChildren(thead, tbody);
+      }
+
+      function renderValidationClassMetrics(metrics) {
+        const table = document.getElementById('validationClassMetrics');
+        if (!metrics.per_class || typeof metrics.per_class !== 'object') {
+          throw new Error('The validation response has no per-class metrics.');
+        }
+        const thead = document.createElement('thead');
+        const header = document.createElement('tr');
+        ['Class', 'Precision', 'Recall', 'F1 score', 'Support'].forEach((label) => {
+          const th = document.createElement('th');
+          th.scope = 'col';
+          th.textContent = label;
+          header.appendChild(th);
+        });
+        thead.appendChild(header);
+        const tbody = document.createElement('tbody');
+        metrics.class_names.forEach((name) => {
+          const scores = metrics.per_class[name];
+          if (!scores) throw new Error(`Per-class validation metrics are missing for ${name}.`);
+          const row = document.createElement('tr');
+          [
+            name,
+            `${Number(scores.precision).toFixed(2)}%`,
+            `${Number(scores.recall).toFixed(2)}%`,
+            `${Number(scores.f1_score).toFixed(2)}%`,
+            Number(scores.support).toLocaleString(),
+          ].forEach((value) => {
+            const cell = document.createElement('td');
+            cell.textContent = value;
+            row.appendChild(cell);
+          });
+          tbody.appendChild(row);
+        });
+        table.replaceChildren(thead, tbody);
+      }
+
+      async function loadValidationMetrics() {
+        const button = document.getElementById('refreshValidationBtn');
+        const summary = document.getElementById('validationSummary');
         button.disabled = true;
-        statusBox.textContent = 'Uploading video...';
+        summary.classList.add('loading');
+        summary.textContent = 'Calculating metrics from held-out labeled images...';
         try {
+          const response = await fetch(`${apiBase}/evaluate`);
+          const data = await readJsonResponse(response);
+          if (!response.ok) throw new Error(data.error || 'Could not calculate validation metrics.');
+          if (!Number.isFinite(Number(data.sample_count)) || Number(data.sample_count) <= 0) {
+            throw new Error('The validation set contains no labeled images.');
+          }
+          for (const key of ['accuracy', 'precision', 'recall', 'f1_score']) {
+            if (!Number.isFinite(Number(data[key])) || Number(data[key]) < 0 || Number(data[key]) > 100) {
+              throw new Error(`The validation response contains an invalid ${key} score.`);
+            }
+          }
+          setText('validationAccuracy', `${Number(data.accuracy).toFixed(2)}%`);
+          setText('validationPrecision', `${Number(data.precision).toFixed(2)}%`);
+          setText('validationRecall', `${Number(data.recall).toFixed(2)}%`);
+          setText('validationF1', `${Number(data.f1_score).toFixed(2)}%`);
+          renderValidationChart(data);
+          renderValidationConfusion(data);
+          renderValidationClassMetrics(data);
+          const fraction = Number(data.test_fraction);
+          const splitDescription = Number.isFinite(fraction)
+            ? `${(fraction * 100).toFixed(0)}% deterministic stratified held-out split`
+            : 'held-out labeled dataset';
+          setText(
+            'validationSummary',
+            `${data.model || 'Current model'} · ${Number(data.sample_count).toLocaleString()} validation images · ${splitDescription}.`,
+          );
+          setText(
+            'validationMethodNote',
+            `Dusty is positive: TP=${Number(data.true_positive)}, FN=${Number(data.false_negative)}, FP=${Number(data.false_positive)}, TN=${Number(data.true_negative)}. Precision = TP/(TP+FP), recall = TP/(TP+FN), F1 is their harmonic mean, and accuracy = (TP+TN)/all predictions.`,
+          );
+        } catch (error) {
+          setText('validationSummary', `Validation metrics unavailable: ${error.message}`);
+          ['validationAccuracy', 'validationPrecision', 'validationRecall', 'validationF1'].forEach((id) => setText(id, '--'));
+          const body = document.createElement('tbody');
+          const row = document.createElement('tr');
+          const cell = document.createElement('td');
+          cell.colSpan = 3;
+          cell.textContent = 'No validation confusion matrix is available.';
+          row.appendChild(cell);
+          body.appendChild(row);
+          document.getElementById('validationConfusion').replaceChildren(body);
+          document.getElementById('validationClassMetrics').replaceChildren();
+          const canvas = document.getElementById('validationChart');
+          canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        } finally {
+          summary.classList.remove('loading');
+          button.disabled = false;
+        }
+      }
+
+      const mediaTabs = [...document.querySelectorAll('.tab-btn')];
+      const mediaPanels = [...document.querySelectorAll('#image-panel, #video-panel')];
+      mediaTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const targetId = tab.dataset.target;
+          if (!mediaPanels.some((panel) => panel.id === targetId)) {
+            throw new Error(`Unknown media panel: ${targetId}`);
+          }
+          mediaTabs.forEach((item) => {
+            const selected = item === tab;
+            item.classList.toggle('active', selected);
+            item.setAttribute('aria-selected', String(selected));
+          });
+          mediaPanels.forEach((panel) => {
+            panel.hidden = panel.id !== targetId;
+          });
+        });
+      });
+
+      const videoRetryBtn = document.getElementById('videoRetryBtn');
+      let lastSelectedVideo = null;
+
+      async function analyzeVideoFile(file) {
+        const button = document.getElementById('videoBtn');
+        try {
+          if (!file) throw new Error('Choose a video file to begin analysis.');
+          validateFile(file, new Set(['mp4']));
+          lastSelectedVideo = file;
+          latestReport = null;
+          reportButton.hidden = true;
+          document.getElementById('detectionResults').hidden = true;
+          const formData = new FormData();
+          formData.append('video', file);
+          formData.append('heatmap', 'true');
+          button.disabled = true;
+          videoRetryBtn.hidden = true;
+          setStatus('videoStatus', 'Uploading video...', 'loading');
           const response = await fetch(`${apiBase}/predict_video`, { method: 'POST', body: formData });
           const data = await readJsonResponse(response);
           if (!response.ok || !data.video_id) {
-            throw new Error(data.error || data.status || 'Video upload failed.');
+            throw new Error(data.error || data.status || 'Video analysis could not be started.');
           }
-          statusBox.textContent = 'Video uploaded. Processing frames...';
-          const video = document.getElementById('videoPreview');
-          video.src = URL.createObjectURL(input.files[0]);
-          video.style.display = 'block';
-          pollVideoStatus(data.video_id);
+          setStatus('videoStatus', 'Video uploaded. Processing frames...', 'loading');
+          pollVideoStatus(data.video_id, file.name);
         } catch (error) {
-          statusBox.textContent = `Video error: ${error.message}`;
+          setStatus('videoStatus', `Video error: ${error.message}`, 'error');
+          videoRetryBtn.hidden = false;
           button.disabled = false;
         }
+      }
+
+      document.getElementById('processedResultVideo').addEventListener('error', () => {
+        setStatus('videoStatus', 'The processed video could not be loaded. Please retry.', 'error');
+        videoRetryBtn.hidden = false;
+      });
+      document.getElementById('videoBtn').addEventListener('click', () => {
+        analyzeVideoFile(videoInput.files && videoInput.files[0]);
+      });
+      videoRetryBtn.addEventListener('click', () => {
+        if (!lastSelectedVideo) {
+          setStatus('videoStatus', 'Select a video before retrying.', 'error');
+          return;
+        }
+        analyzeVideoFile(lastSelectedVideo);
       });
 
-      async function pollVideoStatus(videoId) {
-        const statusBox = document.getElementById('videoStatus');
+      async function pollVideoStatus(videoId, filename) {
         const button = document.getElementById('videoBtn');
         try {
           const response = await fetch(`${apiBase}/video_status/${videoId}`);
           const data = await readJsonResponse(response);
           if (!response.ok) throw new Error(data.error || 'Could not read video status.');
           if (data.status === 'complete' && data.video_url) {
-            const video = document.getElementById('videoPreview');
-            video.src = `${apiBase}${data.video_url}`;
-            video.style.display = 'block';
-            renderMetrics(data);
-            statusBox.textContent = `Video complete. ${data.frames_processed || 0} frames analyzed.`;
+            videoPreview.src = `${apiBase}${data.video_url}`;
+            videoPreviewCard.classList.add('has-video');
+            renderMetrics(data, 'video', filename);
+            setStatus('videoStatus', `Video analysis complete. ${data.frames_processed || 0} frames analyzed.`);
+            videoRetryBtn.hidden = true;
             button.disabled = false;
             loadHistory();
             return;
           }
-          if (data.status === 'error') {
-            throw new Error(data.error || 'Video processing failed.');
-          }
-          statusBox.textContent = `Processing video${Number.isFinite(data.percent) ? ` (${data.percent}%)` : '...'}`;
-          setTimeout(() => pollVideoStatus(videoId), 2000);
+          if (data.status === 'error') throw new Error(data.error || 'Video processing failed.');
+          setStatus('videoStatus', `Processing video${Number.isFinite(data.percent) ? ` (${data.percent}%)` : '...'}`, 'loading');
+          setTimeout(() => pollVideoStatus(videoId, filename), 2000);
         } catch (error) {
-          statusBox.textContent = `Video error: ${error.message}`;
+          setStatus('videoStatus', `Video error: ${error.message}`, 'error');
+          videoRetryBtn.hidden = false;
           button.disabled = false;
         }
       }
 
       const mobileNavToggle = document.getElementById('mobileNavToggle');
       const sidebar = document.getElementById('primaryNavigation');
+      const sidebarLinks = [...document.querySelectorAll('.sidebar-link')];
+      const navTargets = new Map(
+        sidebarLinks.map((link) => [document.querySelector(link.getAttribute('href')), link]),
+      );
+      const setActiveNav = (activeLink) => {
+        sidebarLinks.forEach((link) => {
+          const active = link === activeLink;
+          link.classList.toggle('active', active);
+          if (active) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
+        });
+      };
+
+      const hashTarget = window.location.hash
+        ? document.getElementById(window.location.hash.slice(1))
+        : null;
+      setActiveNav(navTargets.get(hashTarget) || sidebarLinks[0]);
+      window.addEventListener('hashchange', () => {
+        const target = window.location.hash
+          ? document.getElementById(window.location.hash.slice(1))
+          : null;
+        if (navTargets.has(target)) setActiveNav(navTargets.get(target));
+      });
+
       mobileNavToggle.addEventListener('click', () => {
         const isOpen = sidebar.classList.toggle('open');
         mobileNavToggle.setAttribute('aria-expanded', String(isOpen));
         mobileNavToggle.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
       });
-      document.querySelectorAll('.sidebar-link').forEach((link) => {
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape' || !sidebar.classList.contains('open')) return;
+        sidebar.classList.remove('open');
+        mobileNavToggle.setAttribute('aria-expanded', 'false');
+        mobileNavToggle.setAttribute('aria-label', 'Open navigation');
+        mobileNavToggle.focus();
+      });
+      sidebarLinks.forEach((link) => {
         link.addEventListener('click', () => {
+          setActiveNav(link);
           sidebar.classList.remove('open');
           mobileNavToggle.setAttribute('aria-expanded', 'false');
           mobileNavToggle.setAttribute('aria-label', 'Open navigation');
         });
       });
+      if ('IntersectionObserver' in window) {
+        const navObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            setActiveNav(navTargets.get(entry.target));
+          });
+        }, { rootMargin: '-18% 0px -68% 0px' });
+        navTargets.forEach((_link, target) => navObserver.observe(target));
+      }
+
       fetch(`${apiBase}/health`).then(async (response) => {
         const data = await response.json();
-        const badge = document.getElementById('systemStatus');
-        badge.textContent = data.status === 'ok' ? 'System ready' : 'System unavailable';
+        document.getElementById('systemStatus').textContent =
+          data.status === 'ok' ? 'System ready' : 'System unavailable';
       }).catch(() => {
         document.getElementById('systemStatus').textContent = 'System unavailable';
       });
+
+      async function loadHistory() {
+        try {
+          const response = await fetch(`${apiBase}/history`);
+          if (!response.ok) throw new Error('Unable to load inspection history.');
+          const history = await response.json();
+          inspectionHistory = history;
+          renderHistoryChart(history);
+          renderConditionChart(history);
+          renderHistoryRows(history);
+          renderMaintenanceInsights(history);
+          const cleanCount = history.filter((item) => item.label === 'Clean').length;
+          const dustyCount = history.filter((item) => item.label === 'Dusty').length;
+          setText('summaryInspections', String(history.length));
+          setText('summaryClean', String(cleanCount));
+          setText('summaryDusty', String(dustyCount));
+          setText('historySummary', history.length ? `${history.length} inspection${history.length === 1 ? '' : 's'} recorded` : 'No inspections recorded yet');
+        } catch (error) {
+          setText('historySummary', error.message);
+          setText('maintenanceSummary', 'Inspection records unavailable');
+          document.getElementById('historyRows').innerHTML =
+            '<tr><td colspan="6" class="empty-state">Inspection history could not be loaded.</td></tr>';
+          setText('maintenanceLatestCondition', 'Unavailable');
+          setText('maintenanceLatestAction', 'Inspection history could not be loaded.');
+          setText('maintenanceLatestDate', '');
+          setText('maintenanceDustyCount', '--');
+          setText('maintenanceInspectionCount', '--');
+          setText('maintenanceAverageCoverage', '--');
+        }
+      }
 
       loadHistory();
     </script>

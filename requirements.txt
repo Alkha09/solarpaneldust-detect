@@ -1,6 +1,9 @@
 flask>=3.0
 numpy>=1.26
 opencv-python-headless>=4.9
+imageio-ffmpeg>=0.5.1
 Pillow>=10.0
+matplotlib>=3.8
+scikit-learn>=1.4
 torch>=2.2
 torchvision>=0.17
