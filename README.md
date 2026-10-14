@@ -37,13 +37,19 @@ Upload a solar panel image and view the original image alongside the AI analysis
 
 **Image upload and prediction interface**
 
-_Add a screenshot of the image upload area here._
+![SolarSense Image Detection](screenshot(319).png)
 
-`![SolarSense Image login page](screenshot(319).png)`
+### Maintenance Page
 
-`![SolarSense Image maintance page](screenshot(322).png)`
+View maintenance recommendations for detected dusty solar panels.
 
-`![SolarSense Image inspection history](screenshot(323).png)`
+![SolarSense Maintenance Page](screenshot(322).png)
+
+### Inspection History
+
+Review previous solar panel inspections and their results.
+
+![SolarSense Inspection History](screenshot(323).png)
 
 **Prediction and heatmap results**
 
