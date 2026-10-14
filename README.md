@@ -60,15 +60,13 @@ Review previous solar panel inspections and their results.
 
 Upload a video containing solar panel footage for analysis.
 
-**photo upload interface**
+**photo Upload Interface**
 
-[SolarSense photo Page](Screenshot%20%28330%29.png)
+![SolarSense Video Upload](Screenshot%20%28330%29.png)
 
-**photo analysis results**
+**photo Analysis Results**
 
-
-
-`[SolarSense photo Page](Screenshot%20%28331%29.png)
+![SolarSense Video Analysis Results](Screenshot%20%28331%29.png)
 
 To display these images on GitHub, create the `docs/images/` folder in your repository and place the corresponding screenshots there. Replace the example filenames with your actual screenshot filenames.
 
