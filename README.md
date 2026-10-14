@@ -31,25 +31,19 @@ Dust accumulation on solar panels can reduce their ability to generate electrici
 
 ## Image and Video Demonstrations
 
+
 ### Image Detection
 
-Upload a solar panel image and view the original image alongside the AI analysis.
-
-**Image upload and prediction interface**
-
-![SolarSense Image Detection](screenshot(319).png)
+![SolarSense Image Detection](./screenshot%28319%29.png)
 
 ### Maintenance Page
 
-View maintenance recommendations for detected dusty solar panels.
-
-![SolarSense Maintenance Page](screenshot(322).png)
+![SolarSense Maintenance Page](./screenshot%28322%29.png)
 
 ### Inspection History
 
-Review previous solar panel inspections and their results.
+![SolarSense Inspection History](./screenshot%28323%29.png)
 
-![SolarSense Inspection History](screenshot(323).png)
 
 **Prediction and heatmap results**
 
