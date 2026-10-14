@@ -28,46 +28,47 @@ Dust accumulation on solar panels can reduce their ability to generate electrici
 6. **Maintenance Guidance:** SolarSense provides a maintenance recommendation based on the detected condition.
 
 **Note:** Grad-CAM highlights influential image regions; it does not independently measure the exact percentage of dust. Any dust coverage or efficiency-loss estimate should be interpreted according to the method used.
-### Image Detection
+###Login Page
+
+ ![SolarSense login Page](Screenshot%20%28332%29.png)
+
+### Video Detection
 
 Upload a solar panel image and view the original image alongside the AI analysis.
 
-![SolarSense Image Detection](Screenshot%20%28319%29.png)
+![SolarSense video Page](Screenshot%20%28327%29.png)
 
+**Prediction and heatmap results**
+
+
+![SolarSense detection Page](Screenshot%20%28326%29.png)
 ### Maintenance Page
 
 View maintenance recommendations for detected dusty solar panels.
 
-![SolarSense Maintenance Page](Screenshot%20%28322%29.png)
+![SolarSense Maintenance Page](Screenshot%20%28328%29.png)
 
 ### Inspection History
 
 Review previous solar panel inspections and their results.
 
-![SolarSense Inspection History](Screenshot%20%28323%29.png)
+![SolarSense Inspection History](Screenshot%20%28329%29.png)
 
 
-**Prediction and heatmap results**
 
-_Add a screenshot showing the Clean/Dusty prediction and Grad-CAM heatmap here._
-
-`![SolarSense Prediction Results](docs/images/image-results.png)`
-
-### Video Detection
+### photo Detection
 
 Upload a video containing solar panel footage for analysis.
 
-**Video upload interface**
+**photo upload interface**
 
-_Add a screenshot of the video upload area here._
+[SolarSense photo Page](Screenshot%20%28330%29.png)
 
-`![SolarSense Video Upload](docs/images/video-upload.png)`
+**photo analysis results**
 
-**Video analysis results**
 
-_Add a screenshot showing the video analysis output here._
 
-`![SolarSense Video Results](docs/images/video-results.png)`
+`[SolarSense photo Page](Screenshot%20%28331%29.png)
 
 To display these images on GitHub, create the `docs/images/` folder in your repository and place the corresponding screenshots there. Replace the example filenames with your actual screenshot filenames.
 
